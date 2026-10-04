@@ -11,11 +11,11 @@ export default function TransactionItem({transaction, onPress, onLongPress}: {tr
   const styles = createStyles(colors);
   const income = transaction.type === 'income';
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} delayLongPress={450} style={({pressed}) => [styles.row, pressed && styles.pressed]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={`${transaction.category}, ${income ? 'income' : 'expense'} ${formatCurrency(transaction.amount)}`} accessibilityHint="Tap to edit. Long press to delete." onPress={onPress} onLongPress={onLongPress} delayLongPress={450} style={({pressed}) => [styles.row, pressed && styles.pressed]}>
       <View style={[styles.icon, income ? styles.incomeIcon : styles.expenseIcon]}>{income ? <ArrowUp size={20} color={colors.income} strokeWidth={2.5} /> : <ArrowDown size={20} color={colors.expense} strokeWidth={2.5} />}</View>
       <View style={styles.details}>
-        <Text style={styles.category}>{transaction.category}</Text>
-        <Text style={styles.meta}>{transaction.account === 'bank' ? 'Bank' : 'Cash'} · {formatShortDate(transaction.date)}{transaction.note ? ` · ${transaction.note}` : ''}</Text>
+        <Text style={styles.category} numberOfLines={1}>{transaction.category}</Text>
+        <Text style={styles.meta} numberOfLines={1} ellipsizeMode="tail">{transaction.account === 'bank' ? 'Bank' : 'Cash'} · {formatShortDate(transaction.date)}{transaction.note ? ` · ${transaction.note}` : ''}</Text>
       </View>
       <Text style={[styles.amount, income ? styles.incomeText : styles.expenseText]}>{income ? '+' : '-'}{formatCurrency(transaction.amount)}</Text>
     </Pressable>

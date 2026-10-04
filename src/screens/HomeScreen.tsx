@@ -1,6 +1,6 @@
 import React, {useMemo, useState} from 'react';
 import {Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View} from 'react-native';
-import {Landmark, LogOut, Plus, Wallet} from 'lucide-react-native';
+import {Landmark, LogOut, Plus, Wallet, WalletCards} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {addMonths} from 'date-fns';
@@ -29,6 +29,8 @@ export default function HomeScreen({navigation}: Props) {
   const {transactions, allTransactions, loading, error} = useTransactions(month);
   const summary = useMonthSummary(transactions);
   const balances = useMemo(() => ({bank: accountBalance(allTransactions, 'bank'), cash: accountBalance(allTransactions, 'cash')}), [allTransactions]);
+  const now = new Date();
+  const isLatestMonth = month.getFullYear() === now.getFullYear() && month.getMonth() === now.getMonth();
 
   const confirmDelete = (id: string) => Alert.alert('Delete this entry?', 'This cannot be undone.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => removeTransaction(id)}]);
 
@@ -48,7 +50,7 @@ export default function HomeScreen({navigation}: Props) {
         contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={loading} tintColor={colors.primary} />}
         ListHeaderComponent={<View>
-          <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} />
+          <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
           <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
           <View style={styles.balanceSection}>
             <Text style={styles.sectionTitle}>Balances</Text>
@@ -59,9 +61,17 @@ export default function HomeScreen({navigation}: Props) {
             <View style={styles.totalBalance}><Text style={styles.totalLabel}>Total balance</Text><Text style={styles.totalAmount}>{formatCurrency(balances.bank + balances.cash)}</Text></View>
           </View>
           <View style={styles.transactionsSection}>
-            <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.count}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
+            <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.countBadge}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
             {error ? <Text style={styles.error}>{error}</Text> : null}
-            {!loading && !error && transactions.length === 0 ? <Text style={styles.empty}>No entries this month. Tap + to add your first one.</Text> : null}
+            {!loading && !error && transactions.length === 0 ? <View style={styles.emptyState}>
+              <View style={styles.emptyIcon}><WalletCards size={22} color={colors.primary} strokeWidth={2.1} /></View>
+              <Text style={styles.emptyTitle}>Nothing logged yet</Text>
+              <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
+              <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.emptyAction, pressed && styles.fabPressed]}>
+                <Plus size={17} color={colors.white} strokeWidth={2.4} />
+                <Text style={styles.emptyActionText}>Add entry</Text>
+              </Pressable>
+            </View> : null}
           </View>
         </View>}
         ListFooterComponent={<View style={styles.footer} />}
@@ -101,9 +111,14 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   totalAmount: {color: colors.ink, fontSize: 18, fontWeight: '800'},
   transactionsSection: {marginTop: spacing.lg},
   transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
-  count: {color: colors.inkMuted, fontSize: 12},
+  countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
   error: {color: colors.expense, fontSize: 12, marginTop: spacing.sm},
-  empty: {color: colors.inkMuted, textAlign: 'center', lineHeight: 18, paddingVertical: spacing.lg},
+  emptyState: {alignItems: 'center', paddingHorizontal: spacing.lg, paddingVertical: spacing.xl},
+  emptyIcon: {height: 48, width: 48, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primarySoft},
+  emptyTitle: {color: colors.ink, fontSize: 15, fontWeight: '800', marginTop: spacing.md},
+  emptyCopy: {color: colors.inkMuted, fontSize: 12, lineHeight: 18, maxWidth: 260, textAlign: 'center', marginTop: spacing.xs},
+  emptyAction: {height: controlHeight.sm, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.primary, marginTop: spacing.md},
+  emptyActionText: {color: colors.white, fontSize: 13, fontWeight: '800'},
   footer: {height: spacing.xl * 3},
   fab: {position: 'absolute', right: spacing.lg, bottom: spacing.lg, height: controlHeight.lg, width: controlHeight.lg, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: colors.primary, shadowOpacity: 0.25, shadowRadius: 8, elevation: 5},
   fabPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
