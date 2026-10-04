@@ -1,0 +1,103 @@
+import React, {useMemo, useState} from 'react';
+import {Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View} from 'react-native';
+import {Landmark, LogOut, Plus, Wallet} from 'lucide-react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {addMonths} from 'date-fns';
+import {RootStackParamList} from '../navigation/types';
+import {useAuth} from '../context/AuthContext';
+import {useTransactions} from '../hooks/useTransactions';
+import {useMonthSummary} from '../hooks/useMonthSummary';
+import {accountBalance} from '../utils/summary';
+import {formatCurrency} from '../utils/format';
+import {logout} from '../services/authService';
+import {deleteTransaction as removeTransaction} from '../services/transactionService';
+import SummaryCard from '../components/SummaryCard';
+import MonthSwitcher from '../components/MonthSwitcher';
+import TransactionItem from '../components/TransactionItem';
+import ThemeToggle from '../components/ThemeToggle';
+import {Colors, radius, spacing} from '../constants/theme';
+import {useTheme} from '../context/ThemeContext';
+
+type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+
+export default function HomeScreen({navigation}: Props) {
+  const {user} = useAuth();
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+  const [month, setMonth] = useState(new Date());
+  const {transactions, allTransactions, loading, error} = useTransactions(month);
+  const summary = useMonthSummary(transactions);
+  const balances = useMemo(() => ({bank: accountBalance(allTransactions, 'bank'), cash: accountBalance(allTransactions, 'cash')}), [allTransactions]);
+
+  const confirmDelete = (id: string) => Alert.alert('Delete this entry?', 'This cannot be undone.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => removeTransaction(id)}]);
+
+  return (
+    <SafeAreaView style={styles.safeArea} edges={['top']}>
+      <View style={styles.header}>
+        <View><Text style={styles.greeting}>HOME LEDGER</Text><Text style={styles.title}>Good to see you{user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.</Text></View>
+        <View style={styles.headerActions}>
+          <ThemeToggle />
+          <Pressable accessibilityLabel="Log out" onPress={() => logout()} style={styles.logout}><LogOut size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
+        </View>
+      </View>
+      <FlatList
+        data={transactions}
+        keyExtractor={item => item.id}
+        renderItem={({item}) => <TransactionItem transaction={item} onPress={() => navigation.navigate('AddEntry', {transaction: item})} onLongPress={() => confirmDelete(item.id)} />}
+        contentContainerStyle={styles.listContent}
+        refreshControl={<RefreshControl refreshing={loading} tintColor={colors.primary} />}
+        ListHeaderComponent={<View>
+          <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} />
+          <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
+          <Text style={styles.sectionTitle}>Balances</Text>
+          <View style={styles.balanceRow}>
+            <Balance label="Bank" amount={balances.bank} icon={Landmark} />
+            <Balance label="Cash" amount={balances.cash} icon={Wallet} />
+          </View>
+          <View style={styles.totalBalance}><Text style={styles.totalLabel}>Total balance</Text><Text style={styles.totalAmount}>{formatCurrency(balances.bank + balances.cash)}</Text></View>
+          <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.count}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
+          {error ? <Text style={styles.error}>{error}</Text> : null}
+          {!loading && !error && transactions.length === 0 ? <Text style={styles.empty}>No entries this month. Tap + to add your first one.</Text> : null}
+        </View>}
+        ListFooterComponent={<View style={styles.footer} />}
+      />
+      <Pressable accessibilityLabel="Add entry" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.fab, pressed && styles.fabPressed]}><Plus size={28} color={colors.white} strokeWidth={2.25} /></Pressable>
+    </SafeAreaView>
+  );
+}
+
+function Balance({label, amount, icon: Icon}: {label: string; amount: number; icon: typeof Landmark}) {
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+
+  return <View style={styles.balance}><View style={styles.balanceIcon}><Icon size={15} color={colors.primary} strokeWidth={2.25} /></View><Text style={styles.balanceLabel}>{label}</Text><Text style={[styles.balanceAmount, amount < 0 && styles.negative]}>{formatCurrency(amount)}</Text></View>;
+}
+
+const createStyles = (colors: Colors) => StyleSheet.create({
+  safeArea: {flex: 1, backgroundColor: colors.canvas},
+  header: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.md},
+  headerActions: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
+  greeting: {fontSize: 11, letterSpacing: 1.5, fontWeight: '800', color: colors.primary},
+  title: {fontSize: 22, fontWeight: '800', color: colors.ink, marginTop: 4},
+  logout: {height: 40, width: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center'},
+  listContent: {paddingHorizontal: spacing.lg},
+  summarySpacing: {marginTop: spacing.md},
+  sectionTitle: {color: colors.ink, fontSize: 18, fontWeight: '800'},
+  balanceRow: {flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm},
+  balance: {flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md},
+  balanceIcon: {height: 28, width: 28, borderRadius: 9, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
+  balanceLabel: {color: colors.inkMuted, fontSize: 13, marginTop: spacing.sm},
+  balanceAmount: {color: colors.ink, fontSize: 17, fontWeight: '800', marginTop: 3},
+  negative: {color: colors.expense},
+  totalBalance: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.line},
+  totalLabel: {color: colors.inkMuted, fontSize: 14, fontWeight: '600'},
+  totalAmount: {color: colors.ink, fontSize: 20, fontWeight: '800'},
+  transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.lg},
+  count: {color: colors.inkMuted, fontSize: 13},
+  error: {color: colors.expense, fontSize: 13, marginTop: spacing.md},
+  empty: {color: colors.inkMuted, textAlign: 'center', lineHeight: 21, paddingVertical: spacing.xl},
+  footer: {height: 100},
+  fab: {position: 'absolute', right: spacing.lg, bottom: spacing.lg, height: 60, width: 60, borderRadius: 30, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: colors.primary, shadowOpacity: 0.25, shadowRadius: 10, elevation: 6},
+  fabPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
+});
