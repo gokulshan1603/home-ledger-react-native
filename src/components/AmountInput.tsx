@@ -15,7 +15,7 @@ export default function AmountInput({value, onChangeText}: Props) {
 
   return (
     <View style={styles.wrapper}>
-      <IndianRupee size={28} color={colors.primary} strokeWidth={2.25} />
+      <IndianRupee size={28} color={colors.ink} strokeWidth={2.25} />
       <TextInput
         value={value}
         onChangeText={text => onChangeText(text.replace(/[^0-9.]/g, ''))}
