@@ -32,9 +32,9 @@ export default function RootNavigator() {
       <Stack.Navigator
         screenOptions={{
           headerShadowVisible: false,
-          headerStyle: {backgroundColor: colors.canvas},
+          headerStyle: {backgroundColor: colors.surface},
           headerTintColor: colors.ink,
-          headerTitleStyle: {fontWeight: '700'},
+          headerTitleStyle: {fontWeight: '800', fontSize: 16},
           contentStyle: {backgroundColor: colors.canvas},
         }}>
         {user ? (

@@ -5,7 +5,7 @@ import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datet
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types';
 import {CATEGORIES} from '../constants/categories';
-import {Colors, radius, spacing} from '../constants/theme';
+import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import {addTransaction, deleteTransaction, updateTransaction} from '../services/transactionService';
 import {AccountType, TransactionType} from '../types/transaction';
@@ -89,11 +89,11 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <Text style={styles.label}>Account</Text>
         <AccountToggle value={account} onChange={setAccount} />
         <Text style={styles.label}>Date</Text>
-        <Pressable onPress={() => setShowDatePicker(true)} style={styles.dateButton}><Text style={styles.dateText}>{formatDate(date)}</Text><CalendarDays size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
+        <Pressable onPress={() => setShowDatePicker(true)} style={({pressed}) => [styles.dateButton, pressed && styles.fieldPressed]}><Text style={styles.dateText}>{formatDate(date)}</Text><CalendarDays size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
-        <Pressable onPress={save} disabled={saving} style={[styles.saveButton, saving && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Save entry'}</Text></Pressable>
-        {editing ? <Pressable onPress={remove} style={styles.deleteButton}><Trash2 size={16} color={colors.expense} strokeWidth={2.25} /><Text style={styles.deleteText}>Delete entry</Text></Pressable> : null}
+        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Save entry'}</Text></Pressable>
+        {editing ? <Pressable onPress={remove} style={({pressed}) => [styles.deleteButton, pressed && styles.deletePressed]}><Trash2 size={16} color={colors.expense} strokeWidth={2.25} /><Text style={styles.deleteText}>Delete entry</Text></Pressable> : null}
       </ScrollView>
       {Platform.OS === 'android' && showDatePicker ? <DateTimePicker value={date} mode="date" onChange={onDateChange} /> : null}
       {Platform.OS === 'ios' ? <Modal transparent visible={showDatePicker} animationType="slide" onRequestClose={() => setShowDatePicker(false)}><View style={styles.modalBackdrop}><View style={styles.dateModal}><View style={styles.modalHeader}><Text style={styles.modalTitle}>Choose date</Text><Pressable onPress={() => setShowDatePicker(false)}><Text style={styles.done}>Done</Text></Pressable></View><DateTimePicker value={date} mode="date" display="spinner" onChange={onDateChange} /></View></View></Modal> : null}
@@ -104,26 +104,29 @@ export default function AddEntryScreen({navigation, route}: Props) {
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {padding: spacing.lg, paddingBottom: spacing.xl},
-  typeToggle: {flexDirection: 'row', padding: 4, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
-  typeOption: {flex: 1, alignItems: 'center', paddingVertical: 13, borderRadius: radius.sm},
+  typeToggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
+  typeOption: {flex: 1, alignItems: 'center', paddingVertical: spacing.sm, borderRadius: radius.sm},
   expenseSelected: {backgroundColor: colors.expense},
   incomeSelected: {backgroundColor: colors.income},
   typeText: {color: colors.inkMuted, fontWeight: '700'},
   selectedTypeText: {color: colors.white},
-  label: {color: colors.ink, fontSize: 13, fontWeight: '800', marginTop: spacing.lg, marginBottom: spacing.sm},
+  label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.md, marginBottom: spacing.sm},
   optional: {color: colors.inkMuted, fontWeight: '500'},
-  dateButton: {minHeight: 52, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  dateText: {color: colors.ink, fontSize: 16, fontWeight: '600'},
-  input: {backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, color: colors.ink, fontSize: 16, paddingHorizontal: spacing.md, paddingVertical: 14},
-  noteInput: {minHeight: 80, textAlignVertical: 'top'},
-  saveButton: {minHeight: 56, borderRadius: radius.sm, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl},
-  saveText: {color: colors.white, fontSize: 16, fontWeight: '800'},
+  dateButton: {minHeight: controlHeight.md, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  fieldPressed: {backgroundColor: colors.surfaceMuted},
+  dateText: {color: colors.ink, fontSize: 14, fontWeight: '600'},
+  input: {backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
+  noteInput: {minHeight: 68, textAlignVertical: 'top'},
+  saveButton: {minHeight: controlHeight.lg, borderRadius: radius.md, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl},
+  savePressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.99}]},
+  saveText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   disabled: {opacity: 0.65},
-  deleteButton: {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.lg},
-  deleteText: {color: colors.expense, fontSize: 14, fontWeight: '700'},
+  deleteButton: {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.md},
+  deletePressed: {opacity: 0.65},
+  deleteText: {color: colors.expense, fontSize: 12, fontWeight: '700'},
   modalBackdrop: {flex: 1, justifyContent: 'flex-end', backgroundColor: colors.modalBackdrop},
   dateModal: {backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.lg},
   modalHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  modalTitle: {color: colors.ink, fontSize: 17, fontWeight: '800'},
+  modalTitle: {color: colors.ink, fontSize: 15, fontWeight: '800'},
   done: {color: colors.primary, fontWeight: '800'},
 });

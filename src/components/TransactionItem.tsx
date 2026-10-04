@@ -1,7 +1,7 @@
 import React from 'react';
 import {Pressable, StyleSheet, Text, View} from 'react-native';
 import {ArrowDown, ArrowUp} from 'lucide-react-native';
-import {Colors, radius, spacing} from '../constants/theme';
+import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import {formatCurrency, formatShortDate} from '../utils/format';
 import {Transaction} from '../types/transaction';
@@ -23,15 +23,15 @@ export default function TransactionItem({transaction, onPress, onLongPress}: {tr
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  row: {flexDirection: 'row', alignItems: 'center', paddingVertical: spacing.md, borderBottomWidth: 1, borderBottomColor: colors.line},
-  pressed: {opacity: 0.65},
-  icon: {height: 40, width: 40, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
+  row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md, marginTop: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md},
+  pressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.99}]},
+  icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
   incomeIcon: {backgroundColor: colors.incomeSoft},
   expenseIcon: {backgroundColor: colors.expenseSoft},
   details: {flex: 1, minWidth: 0},
-  category: {color: colors.ink, fontSize: 15, fontWeight: '700'},
-  meta: {color: colors.inkMuted, fontSize: 12, marginTop: 3},
-  amount: {fontSize: 15, fontWeight: '800', marginLeft: spacing.sm},
+  category: {color: colors.ink, fontSize: 14, fontWeight: '700'},
+  meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
+  amount: {fontSize: 14, fontWeight: '800', marginLeft: spacing.sm},
   incomeText: {color: colors.income},
   expenseText: {color: colors.expense},
 });

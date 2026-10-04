@@ -77,16 +77,23 @@ export const darkColors: Colors = {
 };
 
 export const spacing = {
-  xs: 6,
-  sm: 10,
-  md: 16,
-  lg: 24,
-  xl: 32,
+  xs: 4,
+  sm: 8,
+  md: 12,
+  lg: 16,
+  xl: 24,
 };
 
 export const radius = {
-  sm: 10,
-  md: 16,
-  lg: 24,
+  sm: 8,
+  md: 12,
+  lg: 16,
   pill: 999,
+};
+
+export const controlHeight = {
+  xs: 32,
+  sm: 40,
+  md: 48,
+  lg: 52,
 };

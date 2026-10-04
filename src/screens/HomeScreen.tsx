@@ -16,7 +16,7 @@ import SummaryCard from '../components/SummaryCard';
 import MonthSwitcher from '../components/MonthSwitcher';
 import TransactionItem from '../components/TransactionItem';
 import ThemeToggle from '../components/ThemeToggle';
-import {Colors, radius, spacing} from '../constants/theme';
+import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
@@ -38,7 +38,7 @@ export default function HomeScreen({navigation}: Props) {
         <View><Text style={styles.greeting}>HOME LEDGER</Text><Text style={styles.title}>Good to see you{user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.</Text></View>
         <View style={styles.headerActions}>
           <ThemeToggle />
-          <Pressable accessibilityLabel="Log out" onPress={() => logout()} style={styles.logout}><LogOut size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
+          <Pressable accessibilityLabel="Log out" onPress={() => logout()} style={({pressed}) => [styles.logout, pressed && styles.actionPressed]}><LogOut size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
         </View>
       </View>
       <FlatList
@@ -50,15 +50,19 @@ export default function HomeScreen({navigation}: Props) {
         ListHeaderComponent={<View>
           <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} />
           <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
-          <Text style={styles.sectionTitle}>Balances</Text>
-          <View style={styles.balanceRow}>
-            <Balance label="Bank" amount={balances.bank} icon={Landmark} />
-            <Balance label="Cash" amount={balances.cash} icon={Wallet} />
+          <View style={styles.balanceSection}>
+            <Text style={styles.sectionTitle}>Balances</Text>
+            <View style={styles.balanceRow}>
+              <Balance label="Bank" amount={balances.bank} icon={Landmark} />
+              <Balance label="Cash" amount={balances.cash} icon={Wallet} />
+            </View>
+            <View style={styles.totalBalance}><Text style={styles.totalLabel}>Total balance</Text><Text style={styles.totalAmount}>{formatCurrency(balances.bank + balances.cash)}</Text></View>
           </View>
-          <View style={styles.totalBalance}><Text style={styles.totalLabel}>Total balance</Text><Text style={styles.totalAmount}>{formatCurrency(balances.bank + balances.cash)}</Text></View>
-          <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.count}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
-          {error ? <Text style={styles.error}>{error}</Text> : null}
-          {!loading && !error && transactions.length === 0 ? <Text style={styles.empty}>No entries this month. Tap + to add your first one.</Text> : null}
+          <View style={styles.transactionsSection}>
+            <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.count}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
+            {error ? <Text style={styles.error}>{error}</Text> : null}
+            {!loading && !error && transactions.length === 0 ? <Text style={styles.empty}>No entries this month. Tap + to add your first one.</Text> : null}
+          </View>
         </View>}
         ListFooterComponent={<View style={styles.footer} />}
       />
@@ -79,25 +83,28 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   header: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.md},
   headerActions: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
   greeting: {fontSize: 11, letterSpacing: 1.5, fontWeight: '800', color: colors.primary},
-  title: {fontSize: 22, fontWeight: '800', color: colors.ink, marginTop: 4},
-  logout: {height: 40, width: 40, borderRadius: 20, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center'},
+  title: {fontSize: 20, fontWeight: '800', color: colors.ink, marginTop: spacing.xs},
+  logout: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center'},
+  actionPressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.96}]},
   listContent: {paddingHorizontal: spacing.lg},
   summarySpacing: {marginTop: spacing.md},
-  sectionTitle: {color: colors.ink, fontSize: 18, fontWeight: '800'},
+  balanceSection: {marginTop: spacing.lg},
+  sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   balanceRow: {flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm},
   balance: {flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md},
-  balanceIcon: {height: 28, width: 28, borderRadius: 9, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
-  balanceLabel: {color: colors.inkMuted, fontSize: 13, marginTop: spacing.sm},
-  balanceAmount: {color: colors.ink, fontSize: 17, fontWeight: '800', marginTop: 3},
+  balanceIcon: {height: 24, width: 24, borderRadius: radius.sm, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
+  balanceLabel: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.sm},
+  balanceAmount: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xs},
   negative: {color: colors.expense},
-  totalBalance: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.lg, borderBottomWidth: 1, borderBottomColor: colors.line},
-  totalLabel: {color: colors.inkMuted, fontSize: 14, fontWeight: '600'},
-  totalAmount: {color: colors.ink, fontSize: 20, fontWeight: '800'},
-  transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.lg},
-  count: {color: colors.inkMuted, fontSize: 13},
-  error: {color: colors.expense, fontSize: 13, marginTop: spacing.md},
-  empty: {color: colors.inkMuted, textAlign: 'center', lineHeight: 21, paddingVertical: spacing.xl},
-  footer: {height: 100},
-  fab: {position: 'absolute', right: spacing.lg, bottom: spacing.lg, height: 60, width: 60, borderRadius: 30, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: colors.primary, shadowOpacity: 0.25, shadowRadius: 10, elevation: 6},
+  totalBalance: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md},
+  totalLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '600'},
+  totalAmount: {color: colors.ink, fontSize: 18, fontWeight: '800'},
+  transactionsSection: {marginTop: spacing.lg},
+  transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+  count: {color: colors.inkMuted, fontSize: 12},
+  error: {color: colors.expense, fontSize: 12, marginTop: spacing.sm},
+  empty: {color: colors.inkMuted, textAlign: 'center', lineHeight: 18, paddingVertical: spacing.lg},
+  footer: {height: spacing.xl * 3},
+  fab: {position: 'absolute', right: spacing.lg, bottom: spacing.lg, height: controlHeight.lg, width: controlHeight.lg, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: colors.primary, shadowOpacity: 0.25, shadowRadius: 8, elevation: 5},
   fabPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
 });

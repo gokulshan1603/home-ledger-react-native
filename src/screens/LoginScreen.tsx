@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {WalletCards} from 'lucide-react-native';
 import {login} from '../services/authService';
-import {Colors, radius, spacing} from '../constants/theme';
+import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -55,18 +55,18 @@ export default function LoginScreen() {
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
-  content: {flexGrow: 1, justifyContent: 'center', padding: spacing.xl},
+  content: {flexGrow: 1, justifyContent: 'center', padding: spacing.lg},
   themeRow: {alignItems: 'flex-end', marginBottom: spacing.lg},
-  brandMark: {height: 56, width: 56, borderRadius: 18, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, marginBottom: spacing.lg},
-  kicker: {color: colors.primary, fontSize: 12, fontWeight: '800', letterSpacing: 1.8},
-  title: {color: colors.ink, fontSize: 38, lineHeight: 43, fontWeight: '800', marginTop: spacing.sm, maxWidth: 330},
-  subtitle: {color: colors.inkMuted, fontSize: 16, lineHeight: 23, marginTop: spacing.sm, maxWidth: 330},
-  form: {marginTop: spacing.xl},
-  label: {color: colors.ink, fontSize: 13, fontWeight: '700', marginBottom: spacing.xs, marginTop: spacing.md},
-  input: {backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.line, borderRadius: radius.sm, color: colors.ink, fontSize: 16, paddingHorizontal: spacing.md, paddingVertical: 14},
-  error: {color: colors.expense, fontSize: 13, marginTop: spacing.md},
-  button: {minHeight: 54, backgroundColor: colors.primary, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg},
+  brandMark: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, marginBottom: spacing.md, shadowColor: colors.primary, shadowOpacity: 0.2, shadowRadius: 10, shadowOffset: {width: 0, height: 5}, elevation: 3},
+  kicker: {color: colors.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1.6},
+  title: {color: colors.ink, fontSize: 32, lineHeight: 37, fontWeight: '800', marginTop: spacing.sm, maxWidth: 300},
+  subtitle: {color: colors.inkMuted, fontSize: 14, lineHeight: 20, marginTop: spacing.sm, maxWidth: 300},
+  form: {marginTop: spacing.lg, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.lg},
+  label: {color: colors.ink, fontSize: 12, fontWeight: '700', marginBottom: spacing.xs, marginTop: spacing.sm},
+  input: {height: controlHeight.md, backgroundColor: colors.surfaceMuted, borderRadius: radius.sm, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md},
+  error: {color: colors.expense, fontSize: 12, marginTop: spacing.sm},
+  button: {minHeight: controlHeight.lg, backgroundColor: colors.primary, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', marginTop: spacing.md},
   buttonPressed: {backgroundColor: colors.primaryDark},
   disabled: {opacity: 0.7},
-  buttonText: {color: colors.white, fontSize: 16, fontWeight: '800'},
+  buttonText: {color: colors.white, fontSize: 14, fontWeight: '800'},
 });
