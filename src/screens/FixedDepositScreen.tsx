@@ -2,7 +2,7 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
 import Svg, {Defs, LinearGradient, Rect, Stop} from 'react-native-svg';
 import {useFocusEffect} from '@react-navigation/native';
-import {BadgeIndianRupee, Plus} from 'lucide-react-native';
+import {BadgeIndianRupee, CalendarClock, CalendarDays, CalendarRange, Plus} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {FDStackParamList} from '../navigation/types';
@@ -85,7 +85,7 @@ export default function FixedDepositScreen({navigation}: Props) {
         </Pressable>
       </View>
     </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
-      <View style={styles.summaryCard}>
+      <View style={styles.principalCard}>
         <Svg style={StyleSheet.absoluteFillObject} viewBox="0 0 1 1" preserveAspectRatio="none">
           <Defs>
             <LinearGradient id="fixedDepositSummaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -95,18 +95,16 @@ export default function FixedDepositScreen({navigation}: Props) {
           </Defs>
           <Rect x="0" y="0" width="1" height="1" fill="url(#fixedDepositSummaryGradient)" />
         </Svg>
-        <View style={styles.summaryContent}>
-          <View style={styles.summaryTop}>
-            <Text style={styles.summaryTopLabel}>Active principal</Text>
-            <Text style={styles.summaryTopValue}>{formatCurrency(totalPrincipal)}</Text>
-          </View>
-          <View style={styles.summaryStats}>
-            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Monthly interest</Text><Text style={styles.summaryAmount}>{formatCurrency(monthlyInterest)}</Text></View>
-            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Quarterly interest</Text><Text style={styles.summaryAmount}>{formatCurrency(quarterlyInterest)}</Text></View>
-            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Annual interest</Text><Text style={styles.summaryAmount}>{formatCurrency(annualInterest)}</Text></View>
-            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Maturity amount</Text><Text style={styles.summaryAmount}>{formatCurrency(maturityAmount)}</Text></View>
-          </View>
+        <View style={styles.principalContent}>
+          <Text style={styles.principalLabel}>Active principal</Text>
+          <Text style={styles.principalValue}>{formatCurrency(totalPrincipal)}</Text>
         </View>
+      </View>
+      <View style={styles.statsGrid}>
+        <DepositStat label="Monthly interest" amount={monthlyInterest} icon={CalendarClock} />
+        <DepositStat label="Quarterly interest" amount={quarterlyInterest} icon={CalendarDays} />
+        <DepositStat label="Annual interest" amount={annualInterest} icon={CalendarRange} />
+        <DepositStat label="Maturity amount" amount={maturityAmount} icon={BadgeIndianRupee} />
       </View>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Deposits</Text>
@@ -131,19 +129,27 @@ export default function FixedDepositScreen({navigation}: Props) {
   </SafeAreaView>;
 }
 
+function DepositStat({label, amount, icon: Icon}: {label: string; amount: number; icon: typeof CalendarClock}) {
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+
+  return <View style={styles.statCard}><View style={styles.statCopy}><Text style={styles.statLabel}>{label}</Text><Text style={styles.statAmount}>{formatCurrency(amount)}</Text></View><View style={styles.statIcon}><Icon size={24} color={colors.primary} strokeWidth={2.25} /></View></View>;
+}
+
 const createStyles = (colors: Colors) => StyleSheet.create({
   safeArea: {flex: 1, backgroundColor: colors.canvas},
   contentScroll: {flex: 1},
   content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
-  summaryCard: {backgroundColor: colors.primaryDark, borderRadius: radius.lg, overflow: 'hidden'},
-  summaryContent: {padding: spacing.md, zIndex: 1},
-  summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  summaryTopLabel: {color: colors.white, fontSize: 15, fontWeight: '600'},
-  summaryTopValue: {color: colors.white, fontSize: 24, fontWeight: '800'},
-  summaryStats: {flexDirection: 'row', flexWrap: 'wrap', marginTop: spacing.sm},
-  summaryStat: {width: '50%', paddingRight: spacing.lg, marginBottom: spacing.sm},
-  summaryStatLabel: {color: colors.white, fontSize: 13, fontWeight: '600', marginBottom: spacing.xs},
-  summaryAmount: {alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm, color: colors.white, backgroundColor: colors.primary, fontSize: 15, fontWeight: '800'},
+  principalCard: {backgroundColor: colors.primaryDark, borderRadius: radius.lg, overflow: 'hidden', shadowColor: colors.ink, shadowOpacity: 0.14, shadowRadius: 12, shadowOffset: {width: 0, height: 5}, elevation: 3},
+  principalContent: {padding: spacing.md, zIndex: 1},
+  principalLabel: {color: colors.white, fontSize: 15, fontWeight: '600'},
+  principalValue: {color: colors.white, fontSize: 26, fontWeight: '800', marginTop: spacing.xs},
+  statsGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, marginTop: spacing.sm},
+  statCard: {width: '48%', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md},
+  statCopy: {flex: 1, minWidth: 0},
+  statIcon: {height: 44, width: 44, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm},
+  statLabel: {color: colors.inkMuted, fontSize: 12},
+  statAmount: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xs},
   sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
