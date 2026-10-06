@@ -1,6 +1,5 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
 import {HandCoins, Plus} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -24,17 +23,9 @@ export default function LoansScreen({navigation}: Props) {
   const [direction, setDirection] = useState<LoanDirection>('given');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
-  const hasFocused = useRef(false);
   const visible = useMemo(() => items.filter(item => item.direction === direction), [direction, items]);
   const activeItems = useMemo(() => visible.filter(item => item.status === 'active'), [visible]);
   const totalPrincipal = useMemo(() => activeItems.reduce((sum, item) => sum + item.principal, 0), [activeItems]);
-
-  useFocusEffect(useCallback(() => {
-    if (hasFocused.current) {
-      reload();
-    }
-    hasFocused.current = true;
-  }, [reload]));
 
   const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
 

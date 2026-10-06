@@ -1,6 +1,5 @@
-import React, {useCallback, useMemo, useRef, useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
 import {Landmark, Plus, ReceiptText, Wallet} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {addMonths} from 'date-fns';
@@ -25,14 +24,7 @@ export default function TransactionsScreen({navigation}: Props) {
   const styles = createStyles(colors);
   const [month, setMonth] = useState(new Date());
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const {transactions, allTransactions, loading, error, refresh, reload} = useTransactions(month);
-  const hasFocused = useRef(false);
-  useFocusEffect(useCallback(() => {
-    if (hasFocused.current) {
-      reload();
-    }
-    hasFocused.current = true;
-  }, [reload]));
+  const {transactions, allTransactions, loading, error, refresh} = useTransactions(month);
   const summary = useMonthSummary(transactions);
   const balances = useMemo(() => ({bank: accountBalance(allTransactions, 'bank'), cash: accountBalance(allTransactions, 'cash')}), [allTransactions]);
   const transactionBalances = useMemo(() => {
