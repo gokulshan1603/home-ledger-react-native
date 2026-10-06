@@ -59,15 +59,15 @@ export default function LoansScreen({navigation}: Props) {
       <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
       <Text style={[styles.emptyTitle, styles.loadingText]}>Loading loans…</Text>
     </View> : error ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
-      {directionToggle}
-      <View style={styles.stateArea}>
+      <View style={styles.stateToggle}>{directionToggle}</View>
+      <View style={[styles.stateArea, styles.stateCard]}>
         <View style={styles.emptyIcon}><HandCoins size={25} color={colors.primary} strokeWidth={2.15} /></View>
         <Text style={styles.emptyTitle}>Could not load loans</Text>
         <Text style={styles.emptyCopy}>{error}</Text>
       </View>
     </ScrollView> : visible.length === 0 ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
-      {directionToggle}
-      <View style={styles.stateArea}>
+      <View style={styles.stateToggle}>{directionToggle}</View>
+      <View style={[styles.stateArea, styles.stateCard]}>
         <View style={styles.emptyIcon}><HandCoins size={25} color={colors.primary} strokeWidth={2.15} /></View>
         <Text style={styles.emptyTitle}>No loans {direction === 'given' ? 'given' : 'taken'} yet</Text>
         <Text style={styles.emptyCopy}>Add a loan to start tracking it.</Text>
@@ -142,8 +142,10 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   value: {color: colors.ink, fontSize: 14, fontWeight: '800'},
   amountLabel: {color: colors.inkMuted, fontSize: 11, fontWeight: '600', marginTop: spacing.xs},
   stateScroll: {flex: 1},
-  stateScrollContent: {flexGrow: 1, paddingHorizontal: spacing.lg},
-  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
+  stateScrollContent: {flexGrow: 1},
+  stateToggle: {marginHorizontal: spacing.lg},
+  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: 0, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
+  stateCard: {marginTop: spacing.lg},
   loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
   emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.pill, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center'},
   emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
