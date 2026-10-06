@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Save, Trash2} from 'lucide-react-native';
+import {KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Check, Trash2} from 'lucide-react-native';
 import {AddEntryScreenProps} from '../navigation/types';
 import {CATEGORIES} from '../constants/categories';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
@@ -13,6 +13,7 @@ import CategoryPicker from '../components/CategoryPicker';
 import ThemedDatePicker from '../components/ThemedDatePicker';
 import AppHeader from '../components/AppHeader';
 import ConfirmDialog from '../components/ConfirmDialog';
+import MessageDialog from '../components/MessageDialog';
 
 type Props = AddEntryScreenProps;
 
@@ -29,6 +30,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
   const [note, setNote] = useState(existing?.note ?? '');
   const [saving, setSaving] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
   const openDeleteDialog = useCallback(() => {
     if (existing) setShowDeleteDialog(true);
   }, [existing]);
@@ -51,7 +53,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
   const save = async () => {
     const numericAmount = Number(amount);
     if (!numericAmount || numericAmount <= 0) {
-      Alert.alert('Enter an amount', 'Add a number greater than zero to save this entry.');
+      setMessageDialog({title: 'Enter an amount', message: 'Add a number greater than zero to save this entry.'});
       return;
     }
     setSaving(true);
@@ -64,7 +66,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
       }
       navigation.goBack();
     } catch {
-      Alert.alert('Could not save entry', 'Please check your connection and try again.');
+      setMessageDialog({title: 'Could not save entry', message: 'Please check your connection and try again.'});
     } finally {
       setSaving(false);
     }
@@ -77,7 +79,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
       await deleteTransaction(existing.id);
       navigation.goBack();
     } catch {
-      Alert.alert('Could not delete entry', 'Please check your connection and try again.');
+      setMessageDialog({title: 'Could not delete entry', message: 'Please check your connection and try again.'});
     }
   };
 
@@ -97,9 +99,10 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <ThemedDatePicker value={date} onChange={setDate} />
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
-        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Save size={17} color={colors.white} strokeWidth={2.25} /></>}</Pressable>
+        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Check size={17} color={colors.white} strokeWidth={2.5} /></>}</Pressable>
       </ScrollView>
       <ConfirmDialog visible={showDeleteDialog} title="Delete this entry?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setShowDeleteDialog(false)} onConfirm={remove} />
+      <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
     </KeyboardAvoidingView>
   );
 }
@@ -107,7 +110,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.xl * 3},
-  typeToggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
+  typeToggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.md},
   typeOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
   expenseSelected: {backgroundColor: colors.expense},
   incomeSelected: {backgroundColor: colors.income},
@@ -117,7 +120,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   optional: {color: colors.inkMuted, fontWeight: '500'},
   input: {backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
   noteInput: {minHeight: 68, textAlignVertical: 'top'},
-  saveButton: {minHeight: controlHeight.lg, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},
+  saveButton: {height: controlHeight.md, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},
   savePressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.99}]},
   saveText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   disabled: {opacity: 0.65},

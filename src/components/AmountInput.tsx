@@ -30,6 +30,6 @@ export default function AmountInput({value, onChangeText}: Props) {
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  wrapper: {minHeight: controlHeight.md, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, paddingHorizontal: spacing.md},
+  wrapper: {height: controlHeight.md, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, paddingHorizontal: spacing.md},
   input: {flex: 1, color: colors.ink, fontSize: 32, fontWeight: '800', padding: 0, marginLeft: spacing.sm},
 });

@@ -74,7 +74,7 @@ export default function ThemedDatePicker({value, onChange}: {value: Date; onChan
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  field: {minHeight: controlHeight.md, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  field: {height: controlHeight.md, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   fieldPressed: {backgroundColor: colors.surfaceMuted},
   fieldText: {color: colors.ink, fontSize: 14, fontWeight: '600'},
   backdrop: {flex: 1, justifyContent: 'flex-end', backgroundColor: colors.modalBackdrop},
