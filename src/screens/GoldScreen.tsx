@@ -1,6 +1,8 @@
-import React, {useMemo} from 'react';
-import {Alert, FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {Plus, Trash2} from 'lucide-react-native';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {Gem, Plus} from 'lucide-react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {GoldStackParamList} from '../navigation/types';
 import {useGold} from '../hooks/useGold';
@@ -9,18 +11,132 @@ import {formatCurrency, formatShortDate} from '../utils/format';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import AppHeader from '../components/AppHeader';
+import ConfirmDialog from '../components/ConfirmDialog';
+import MessageDialog from '../components/MessageDialog';
 
 type Props = NativeStackScreenProps<GoldStackParamList, 'Gold'>;
 
 export default function GoldScreen({navigation}: Props) {
-  const {colors} = useTheme(); const styles = createStyles(colors); const {items, loading, error} = useGold();
-  const total = useMemo(() => items.filter(item => item.status === 'active').reduce((sum, item) => sum + (item.currentValue ?? item.purchaseAmount), 0), [items]);
-  const remove = (id: string) => Alert.alert('Delete gold holding?', 'This cannot be undone.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => deleteGold(id)}]);
-  return <SafeAreaView style={styles.safe}>
-    <AppHeader title="Gold holdings" />
-    <View style={styles.actions}><Pressable accessibilityLabel="Add gold holding" onPress={() => navigation.navigate('AddGold')} style={({pressed}) => [styles.add, pressed && styles.pressed]}><Plus size={20} color={colors.white} strokeWidth={2.4} /></Pressable></View>
-    <FlatList data={items} keyExtractor={item => item.id} contentContainerStyle={styles.list} refreshControl={<RefreshControl refreshing={loading} tintColor={colors.primary} />} ListHeaderComponent={<View style={styles.summary}><Text style={styles.summaryLabel}>Total gold value</Text><Text style={styles.summaryValue}>{formatCurrency(total)}</Text></View>} ListEmptyComponent={!loading ? <View style={styles.empty}><Text style={styles.emptyTitle}>{error ? 'Could not load gold' : 'No gold holdings yet'}</Text><Text style={styles.emptyCopy}>{error ?? 'Add your first gold holding to start tracking it.'}</Text></View> : null} renderItem={({item}) => <Pressable onPress={() => navigation.navigate('AddGold', {holding: item})} onLongPress={() => remove(item.id)} style={({pressed}) => [styles.row, pressed && styles.rowPressed]}><View style={styles.details}><Text style={styles.name}>{item.name}</Text><Text style={styles.meta}>{item.status === 'active' ? 'Active' : 'Sold'} · {formatShortDate(item.purchasedAt)}{item.weight ? ` · ${item.weight}g` : ''}</Text></View><View style={styles.amount}><Text style={styles.value}>{formatCurrency(item.currentValue ?? item.purchaseAmount)}</Text><Text style={styles.editHint}><Trash2 size={12} color={colors.inkMuted} /> Hold to delete</Text></View></Pressable>} />
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+  const {items, loading, error, refresh, reload} = useGold();
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
+  const hasFocused = useRef(false);
+  const activeItems = useMemo(() => items.filter(item => item.status === 'active'), [items]);
+  const total = useMemo(() => activeItems.reduce((sum, item) => sum + (item.currentValue ?? item.purchaseAmount), 0), [activeItems]);
+
+  useFocusEffect(useCallback(() => {
+    if (hasFocused.current) {
+      reload();
+    }
+    hasFocused.current = true;
+  }, [reload]));
+
+  const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
+
+  const confirmDelete = (id: string) => setPendingDeleteId(id);
+  const deletePendingHolding = async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    try {
+      await deleteGold(id);
+      await reload();
+    } catch {
+      setMessageDialog({title: 'Could not delete gold holding', message: 'Please check your connection and try again.'});
+    }
+  };
+
+  return <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <AppHeader title="Gold" rightAction={{accessibilityLabel: 'Add gold holding', onPress: () => navigation.navigate('AddGold'), icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
+    {loading ? <View style={styles.stateArea}>
+      <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
+      <Text style={[styles.emptyTitle, styles.loadingText]}>Loading gold holdings…</Text>
+    </View> : error ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
+      <View style={styles.stateArea}>
+        <View style={styles.emptyIcon}><Gem size={25} color={colors.primary} strokeWidth={2.15} /></View>
+        <Text style={styles.emptyTitle}>Could not load gold</Text>
+        <Text style={styles.emptyCopy}>{error}</Text>
+      </View>
+    </ScrollView> : items.length === 0 ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
+      <View style={styles.stateArea}>
+        <View style={styles.emptyIcon}><Gem size={25} color={colors.primary} strokeWidth={2.15} /></View>
+        <Text style={styles.emptyTitle}>No gold holdings yet</Text>
+        <Text style={styles.emptyCopy}>Add your first gold holding to start tracking it.</Text>
+        <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddGold')} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+          <Plus size={15} color={colors.white} strokeWidth={2.4} />
+          <Text style={styles.emptyActionText}>Add holding</Text>
+        </Pressable>
+      </View>
+    </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
+      <View style={styles.summaryCard}>
+        <View style={styles.summaryTop}>
+          <View style={styles.summaryCopy}>
+            <Text style={styles.summaryLabel}>Total active value</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(total)}</Text>
+          </View>
+          <View style={styles.summaryIcon}><Gem size={25} color={colors.primary} strokeWidth={2.1} /></View>
+        </View>
+        <Text style={styles.summaryMeta}>{activeItems.length} active {activeItems.length === 1 ? 'holding' : 'holdings'}</Text>
+      </View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>Holdings</Text>
+        <Text style={styles.countBadge}>{items.length} {items.length === 1 ? 'item' : 'items'}</Text>
+      </View>
+      <View style={styles.holdingsCard}>
+        {items.map((item, index) => <Pressable key={item.id} onPress={() => navigation.navigate('AddGold', {holding: item})} onLongPress={() => confirmDelete(item.id)} delayLongPress={450} style={({pressed}) => [styles.row, index < items.length - 1 && styles.rowDivider, pressed && styles.rowPressed]}>
+          <View style={styles.itemIcon}><Gem size={20} color={colors.primary} strokeWidth={2.15} /></View>
+          <View style={styles.details}>
+            <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
+            <Text style={styles.meta} numberOfLines={1}>{item.status === 'active' ? 'Active' : 'Sold'} · {formatShortDate(item.purchasedAt)}{item.weight ? ` · ${item.weight}g` : ''}</Text>
+          </View>
+          <View style={styles.amount}>
+            <Text style={styles.value}>{formatCurrency(item.currentValue ?? item.purchaseAmount)}</Text>
+            <Text style={styles.amountLabel}>{item.currentValue == null ? 'Purchase value' : 'Current value'}</Text>
+          </View>
+        </Pressable>)}
+      </View>
+    </ScrollView>}
+    <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this gold holding?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingHolding} />
+    <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
   </SafeAreaView>;
 }
 
-const createStyles = (colors: Colors) => StyleSheet.create({safe: {flex: 1, backgroundColor: colors.canvas}, actions: {alignItems: 'flex-end', paddingHorizontal: spacing.lg, marginTop: -spacing.sm, marginBottom: spacing.sm}, add: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center'}, pressed: {opacity: 0.78}, list: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2}, summary: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginBottom: spacing.lg}, summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'}, summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs}, row: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm}, rowPressed: {backgroundColor: colors.surfaceMuted}, details: {flex: 1, minWidth: 0}, name: {color: colors.ink, fontSize: 15, fontWeight: '800'}, meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs}, amount: {alignItems: 'flex-end', marginLeft: spacing.sm}, value: {color: colors.ink, fontSize: 15, fontWeight: '800'}, editHint: {color: colors.inkMuted, fontSize: 10, marginTop: spacing.xs}, empty: {alignItems: 'center', padding: spacing.xl, backgroundColor: colors.surface, borderRadius: radius.lg}, emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'}, emptyCopy: {color: colors.inkMuted, textAlign: 'center', marginTop: spacing.xs, lineHeight: 20}});
+const createStyles = (colors: Colors) => StyleSheet.create({
+  safeArea: {flex: 1, backgroundColor: colors.canvas},
+  contentScroll: {flex: 1},
+  content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
+  summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
+  summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  summaryCopy: {flex: 1, minWidth: 0},
+  summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
+  summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs},
+  summaryMeta: {color: colors.inkMuted, fontSize: 12, fontWeight: '600', marginTop: spacing.md},
+  summaryIcon: {height: 44, width: 44, borderRadius: radius.md, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm},
+  sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
+  sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
+  countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
+  holdingsCard: {backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
+  row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
+  rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
+  rowPressed: {backgroundColor: colors.surfaceMuted},
+  itemIcon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
+  details: {flex: 1, minWidth: 0},
+  name: {color: colors.ink, fontSize: 14, fontWeight: '700'},
+  meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
+  amount: {alignItems: 'flex-end', marginLeft: spacing.sm},
+  value: {color: colors.ink, fontSize: 14, fontWeight: '800'},
+  amountLabel: {color: colors.inkMuted, fontSize: 11, fontWeight: '600', marginTop: spacing.xs},
+  stateScroll: {flex: 1},
+  stateScrollContent: {flexGrow: 1},
+  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginVertical: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
+  loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
+  emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.pill, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center'},
+  emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
+  loadingText: {marginTop: spacing.sm},
+  emptyCopy: {color: colors.inkMuted, fontSize: 13, lineHeight: 20, maxWidth: 260, textAlign: 'center', marginTop: spacing.xs},
+  emptyAction: {height: controlHeight.xs, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.primary, marginTop: spacing.lg},
+  emptyActionText: {color: colors.white, fontSize: 12, fontWeight: '800'},
+  actionPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
+});
