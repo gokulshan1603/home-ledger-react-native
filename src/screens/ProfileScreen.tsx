@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {LogOut, Moon, Settings, Sun, UserRound} from 'lucide-react-native';
+import {LogOut, Moon, Sun, UserRound} from 'lucide-react-native';
 import {useAuth} from '../context/AuthContext';
 import {ThemeMode, useTheme} from '../context/ThemeContext';
 import {logout} from '../services/authService';
@@ -17,7 +17,7 @@ export default function ProfileScreen() {
   const confirmLogout = () => Alert.alert('Log out?', 'You can sign in again anytime.', [{text: 'Cancel', style: 'cancel'}, {text: 'Log out', style: 'destructive', onPress: logout}]);
   return (
     <SafeAreaView style={styles.flex} edges={['top']}>
-      <AppHeader eyebrow="PROFILE" title="Your profile" />
+      <AppHeader title="Your profile" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
           <View style={styles.avatar}><UserRound size={24} color={colors.primary} strokeWidth={2.2} /></View>
@@ -29,13 +29,6 @@ export default function ProfileScreen() {
 
         <Text style={styles.sectionTitle}>Theme</Text>
         <View style={styles.themeCard}>
-          <View style={styles.settingHeading}>
-            <View style={styles.settingIcon}><Settings size={18} color={colors.primary} strokeWidth={2.2} /></View>
-            <View style={styles.settingCopyBlock}>
-              <Text style={styles.settingTitle}>Appearance</Text>
-              <Text style={styles.settingCopy}>Choose how Paisa looks.</Text>
-            </View>
-          </View>
           <View style={styles.themeOptions}>
             {(['system', 'light', 'dark'] as ThemeMode[]).map(item => (
               <Pressable key={item} accessibilityRole="button" accessibilityState={{selected: mode === item}} onPress={() => chooseMode(item)} style={({pressed}) => [styles.themeOption, mode === item && styles.themeSelected, pressed && styles.optionPressed]}>
@@ -65,12 +58,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   email: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xl, marginBottom: spacing.sm},
   themeCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  settingHeading: {flexDirection: 'row', alignItems: 'center'},
-  settingIcon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
-  settingCopyBlock: {flex: 1, marginLeft: spacing.sm},
-  settingTitle: {color: colors.ink, fontSize: 14, fontWeight: '800'},
-  settingCopy: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
-  themeOptions: {flexDirection: 'row', gap: spacing.xs, marginTop: spacing.lg},
+  themeOptions: {flexDirection: 'row', gap: spacing.xs},
   themeOption: {flex: 1, minHeight: controlHeight.sm, paddingHorizontal: spacing.xs, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   themeSelected: {backgroundColor: colors.primary},
   themeText: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
