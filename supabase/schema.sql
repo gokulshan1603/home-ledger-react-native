@@ -46,18 +46,6 @@ create table public.gold_holdings (
   updated_at timestamptz not null default timezone('utc', now())
 );
 
-create table public.gold_movements (
-  id uuid primary key default gen_random_uuid(),
-  uid uuid not null references auth.users(id) on delete cascade,
-  gold_holding_id uuid not null references public.gold_holdings(id) on delete cascade,
-  kind text not null check (kind in ('purchase', 'valuation', 'sale')),
-  amount numeric(12, 2) not null check (amount > 0),
-  weight numeric(12, 4),
-  date timestamptz not null,
-  note text,
-  created_at timestamptz not null default timezone('utc', now())
-);
-
 create table public.fixed_deposits (
   id uuid primary key default gen_random_uuid(),
   uid uuid not null references auth.users(id) on delete cascade,
@@ -113,19 +101,16 @@ create table public.loan_movements (
 create index gold_holdings_uid_date_idx on public.gold_holdings (uid, purchased_at desc);
 create index fixed_deposits_uid_maturity_idx on public.fixed_deposits (uid, maturity_at asc);
 create index loans_uid_started_idx on public.loans (uid, started_at desc);
-create index gold_movements_parent_date_idx on public.gold_movements (gold_holding_id, date desc);
 create index fixed_deposit_movements_parent_date_idx on public.fixed_deposit_movements (fixed_deposit_id, date desc);
 create index loan_movements_parent_date_idx on public.loan_movements (loan_id, date desc);
 
 alter table public.gold_holdings enable row level security;
-alter table public.gold_movements enable row level security;
 alter table public.fixed_deposits enable row level security;
 alter table public.fixed_deposit_movements enable row level security;
 alter table public.loans enable row level security;
 alter table public.loan_movements enable row level security;
 
 create policy "Users can manage their own gold holdings" on public.gold_holdings for all using ((select auth.uid()) = uid) with check ((select auth.uid()) = uid);
-create policy "Users can manage their own gold movements" on public.gold_movements for all using ((select auth.uid()) = uid) with check ((select auth.uid()) = uid);
 create policy "Users can manage their own fixed deposits" on public.fixed_deposits for all using ((select auth.uid()) = uid) with check ((select auth.uid()) = uid);
 create policy "Users can manage their own fixed deposit movements" on public.fixed_deposit_movements for all using ((select auth.uid()) = uid) with check ((select auth.uid()) = uid);
 create policy "Users can manage their own loans" on public.loans for all using ((select auth.uid()) = uid) with check ((select auth.uid()) = uid);
