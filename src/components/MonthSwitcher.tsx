@@ -21,7 +21,7 @@ export default function MonthSwitcher({month, onPrevious, onNext, nextDisabled =
 const createStyles = (colors: Colors) => StyleSheet.create({
   container: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: colors.surface, borderRadius: radius.pill, padding: spacing.xs},
   button: {height: controlHeight.xs, width: controlHeight.xs, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: colors.surfaceMuted},
-  pressed: {backgroundColor: colors.primarySoft, transform: [{scale: 0.94}]},
+  pressed: {backgroundColor: colors.selectionSoft, transform: [{scale: 0.94}]},
   disabled: {opacity: 0.4},
   month: {fontSize: 14, fontWeight: '800', color: colors.ink, letterSpacing: 0.1},
 });

@@ -8,6 +8,7 @@ export type Colors = {
   primary: string;
   primaryDark: string;
   primarySoft: string;
+  selectionSoft: string;
   income: string;
   incomeSoft: string;
   expense: string;
@@ -33,11 +34,12 @@ export const lightColors: Colors = {
   line: '#DADCE0',
   primary: '#4285F4',
   primaryDark: '#1A73E8',
-  primarySoft: '#E8F0FE',
+  primarySoft: 'rgba(66,133,244,0.12)',
+  selectionSoft: 'rgba(66,133,244,0.12)',
   income: '#34A853',
-  incomeSoft: '#E6F4EA',
+  incomeSoft: 'rgba(52,168,83,0.12)',
   expense: '#EA4335',
-  expenseSoft: '#FCE8E6',
+  expenseSoft: 'rgba(234,67,53,0.12)',
   warning: '#FBBC04',
   summaryInk: '#202124',
   summaryEyebrow: '#AECBFA',
@@ -59,11 +61,12 @@ export const darkColors: Colors = {
   line: '#5F6368',
   primary: '#4285F4',
   primaryDark: '#1A73E8',
-  primarySoft: '#283E5D',
+  primarySoft: 'rgba(66,133,244,0.12)',
+  selectionSoft: 'rgba(66,133,244,0.12)',
   income: '#5AC77A',
-  incomeSoft: '#214A2A',
+  incomeSoft: 'rgba(90,199,122,0.12)',
   expense: '#F06A61',
-  expenseSoft: '#4A2523',
+  expenseSoft: 'rgba(240,106,97,0.12)',
   warning: '#FDD663',
   summaryInk: '#171717',
   summaryEyebrow: '#AECBFA',

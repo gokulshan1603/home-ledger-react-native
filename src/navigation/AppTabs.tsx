@@ -23,7 +23,7 @@ const GoldStack = createNativeStackNavigator<GoldStackParamList>();
 const FDStack = createNativeStackNavigator<FDStackParamList>();
 const LoansStack = createNativeStackNavigator<LoansStackParamList>();
 type TabIconProps = {color: string; focused: boolean};
-const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => <View style={[styles.tabIcon, focused && styles.tabIconFocused]}>{children}</View>;
+const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => { const {colors} = useTheme(); return <View style={[styles.tabIcon, focused && {backgroundColor: colors.selectionSoft}]}>{children}</View>; };
 const TransactionsTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><ArrowDownUp color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const GoldTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><Gem color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const FDTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><BadgeIndianRupee color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
@@ -54,6 +54,5 @@ const styles = StyleSheet.create({
   tabItem: {paddingVertical: 1},
   tabIconSlot: {height: 26, marginBottom: 1},
   tabIcon: {height: 26, width: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13},
-  tabIconFocused: {backgroundColor: 'rgba(66,133,244,0.12)'},
   tabLabel: {fontSize: 11, fontWeight: '700', lineHeight: 14, marginTop: 1, includeFontPadding: false},
 });

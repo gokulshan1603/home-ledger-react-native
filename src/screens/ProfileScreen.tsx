@@ -73,7 +73,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.xl * 3},
   profileCard: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  avatar: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.pill, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
+  avatar: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.pill, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center'},
   profileDetails: {flex: 1, minWidth: 0, marginLeft: spacing.md},
   name: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   email: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
