@@ -41,7 +41,7 @@ export default function AppTabs() {
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
   return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64 + insets.bottom, paddingBottom: insets.bottom + 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabelStyle: styles.tabLabel}}>
-    <Tabs.Screen name="Home" component={HomeNavigator} options={{tabBarIcon: HomeTabIcon}} />
+    <Tabs.Screen name="Home" component={HomeNavigator} options={{tabBarIcon: HomeTabIcon, tabBarLabel: 'Transactions'}} />
     <Tabs.Screen name="Gold" component={GoldNavigator} options={{tabBarIcon: GoldTabIcon}} />
     <Tabs.Screen name="FD" component={FDNavigator} options={{tabBarIcon: FDTabIcon}} />
     <Tabs.Screen name="Loans" component={LoansNavigator} options={{tabBarIcon: LoansTabIcon}} />

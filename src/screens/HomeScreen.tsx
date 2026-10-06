@@ -4,7 +4,6 @@ import {Landmark, Plus, Wallet} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {addMonths} from 'date-fns';
 import {HomeScreenProps} from '../navigation/types';
-import {useAuth} from '../context/AuthContext';
 import {useTransactions} from '../hooks/useTransactions';
 import {useMonthSummary} from '../hooks/useMonthSummary';
 import {accountBalance} from '../utils/summary';
@@ -20,7 +19,6 @@ import {useTheme} from '../context/ThemeContext';
 type Props = HomeScreenProps;
 
 export default function HomeScreen({navigation}: Props) {
-  const {user} = useAuth();
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const [month, setMonth] = useState(new Date());
@@ -43,7 +41,7 @@ export default function HomeScreen({navigation}: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title={`Good to see you${user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.`} />
+      <AppHeader title="Transactions" />
       <View style={styles.overview}>
         <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
         <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
