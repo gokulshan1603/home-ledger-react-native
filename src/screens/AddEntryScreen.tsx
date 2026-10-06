@@ -2,8 +2,7 @@ import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {CalendarDays, Save, Trash2} from 'lucide-react-native';
 import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {RootStackParamList} from '../navigation/types';
+import {AddEntryScreenProps} from '../navigation/types';
 import {CATEGORIES} from '../constants/categories';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
@@ -14,7 +13,7 @@ import AmountInput from '../components/AmountInput';
 import AccountToggle from '../components/AccountToggle';
 import CategoryPicker from '../components/CategoryPicker';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'AddEntry'>;
+type Props = AddEntryScreenProps;
 
 export default function AddEntryScreen({navigation, route}: Props) {
   const {colors} = useTheme();

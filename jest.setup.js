@@ -13,10 +13,15 @@ jest.mock('lucide-react-native', () => {
     IndianRupee: Icon,
     Landmark: Icon,
     LogOut: Icon,
+    LogIn: Icon,
     Moon: Icon,
     Plus: Icon,
+    PiggyBank: Icon,
+    Save: Icon,
+    Settings: Icon,
     Sun: Icon,
     Trash2: Icon,
+    UserRound: Icon,
     Wallet: Icon,
     WalletCards: Icon,
   };
@@ -69,6 +74,13 @@ jest.mock('@react-navigation/native', () => ({
 
 jest.mock('@react-navigation/native-stack', () => ({
   createNativeStackNavigator: () => ({
+    Navigator: ({children}) => children,
+    Screen: () => null,
+  }),
+}));
+
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  createBottomTabNavigator: () => ({
     Navigator: ({children}) => children,
     Screen: () => null,
   }),

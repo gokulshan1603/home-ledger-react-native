@@ -10,6 +10,7 @@ interface ThemeContextValue {
   isDark: boolean;
   mode: ThemeMode;
   toggleTheme: () => void;
+  setMode: (mode: ThemeMode) => void;
 }
 
 const STORAGE_KEY = '@home-ledger/theme-mode';
@@ -28,15 +29,19 @@ export const ThemeProvider = ({children}: {children: React.ReactNode}) => {
   }, []);
 
   const isDark = mode === 'dark' || (mode === 'system' && systemScheme === 'dark');
+  const setThemeMode = (nextMode: ThemeMode) => {
+    setMode(nextMode);
+    AsyncStorage.setItem(STORAGE_KEY, nextMode);
+  };
   const value = useMemo<ThemeContextValue>(() => ({
     colors: isDark ? darkColors : lightColors,
     isDark,
     mode,
     toggleTheme: () => {
       const nextMode: ThemeMode = isDark ? 'light' : 'dark';
-      setMode(nextMode);
-      AsyncStorage.setItem(STORAGE_KEY, nextMode);
+      setThemeMode(nextMode);
     },
+    setMode: setThemeMode,
   }), [isDark, mode]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

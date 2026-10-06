@@ -1,25 +1,23 @@
 import React, {useMemo, useState} from 'react';
 import {Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View} from 'react-native';
-import {Landmark, LogOut, Plus, Wallet} from 'lucide-react-native';
+import {Landmark, Plus, Wallet} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {addMonths} from 'date-fns';
-import {RootStackParamList} from '../navigation/types';
+import {HomeScreenProps} from '../navigation/types';
 import {useAuth} from '../context/AuthContext';
 import {useTransactions} from '../hooks/useTransactions';
 import {useMonthSummary} from '../hooks/useMonthSummary';
 import {accountBalance} from '../utils/summary';
 import {formatCurrency} from '../utils/format';
-import {logout} from '../services/authService';
 import {deleteTransaction as removeTransaction} from '../services/transactionService';
 import SummaryCard from '../components/SummaryCard';
 import MonthSwitcher from '../components/MonthSwitcher';
 import TransactionItem from '../components/TransactionItem';
-import ThemeToggle from '../components/ThemeToggle';
+import AppHeader from '../components/AppHeader';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 
-type Props = NativeStackScreenProps<RootStackParamList, 'Home'>;
+type Props = HomeScreenProps;
 
 export default function HomeScreen({navigation}: Props) {
   const {user} = useAuth();
@@ -45,13 +43,7 @@ export default function HomeScreen({navigation}: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <View style={styles.header}>
-        <View><Text style={styles.greeting}>HOME LEDGER</Text><Text style={styles.title}>Good to see you{user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.</Text></View>
-        <View style={styles.headerActions}>
-          <ThemeToggle />
-          <Pressable accessibilityLabel="Log out" onPress={() => logout()} style={({pressed}) => [styles.logout, pressed && styles.actionPressed]}><LogOut size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
-        </View>
-      </View>
+      <AppHeader eyebrow="HOME LEDGER" title={`Good to see you${user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.`} />
       <View style={styles.overview}>
         <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
         <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
@@ -101,13 +93,7 @@ function Balance({label, amount, icon: Icon}: {label: string; amount: number; ic
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   safeArea: {flex: 1, backgroundColor: colors.canvas},
-  header: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.md},
-  headerActions: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
   overview: {paddingHorizontal: spacing.lg},
-  greeting: {fontSize: 11, letterSpacing: 1.5, fontWeight: '800', color: colors.primary},
-  title: {fontSize: 20, fontWeight: '800', color: colors.ink, marginTop: spacing.xs},
-  logout: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, backgroundColor: colors.surface, alignItems: 'center', justifyContent: 'center'},
-  actionPressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.96}]},
   listContent: {paddingHorizontal: 0},
   emptyListContent: {flexGrow: 1, justifyContent: 'center'},
   summarySpacing: {marginTop: spacing.md},

@@ -1,11 +1,11 @@
 # Home Ledger
 
-Home Ledger is a React Native CLI app for tracking personal home income and expenses. Every entry belongs to Bank or Cash, monthly totals update in real time, and balances are calculated from the full transaction history.
+Home Ledger is a React Native CLI app for tracking personal home income and expenses, gold holdings, fixed deposits, and loans. The app uses independent bottom-tab modules for each area, with realtime updates and user-owned Supabase data.
 
 ## Stack
 
 - React Native 0.81 + TypeScript
-- React Navigation native stack
+- React Navigation native stack and bottom tabs
 - Supabase Auth and PostgreSQL
 - Supabase Realtime for transaction updates
 - System-aware light and dark themes with a persistent manual toggle
@@ -53,9 +53,12 @@ npm test -- --runInBand --watchman=false
 
 ## App structure
 
-- `src/screens` contains Login, Home, and Add/Edit Entry screens.
+- `src/screens` contains Login, Home, Gold, FD, Loans, and independent add/edit screens.
 - `src/services` contains the Supabase Auth and database boundary.
 - `src/config/supabase.ts` creates the Supabase client and persists sessions with AsyncStorage.
-- `src/hooks` connects realtime transaction listeners and summaries to screens.
-- `src/utils/summary.ts` contains pure income, expense, and account balance calculations.
+- `src/hooks` connects realtime listeners for transactions, Gold, FDs, and Loans.
+- `src/utils/summary.ts` contains pure income, expense, and account balance calculations for the Transactions module.
 - `src/components` contains the reusable controls and transaction list UI.
+- `SAVINGS_AND_LOANS_PLAN.md` documents the independent module architecture and rollout plan.
+
+After authentication, the app opens four bottom tabs: Home, Gold, FD, and Loans. The new modules have separate tables, services, calculations, and forms; their records are not linked to the Transactions module.
