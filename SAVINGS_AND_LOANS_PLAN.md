@@ -2,7 +2,7 @@
 
 ## Goal
 
-Extend Home Ledger with three independent modules:
+Extend Paisa with three independent modules:
 
 - Gold
 - Fixed deposits (FDs)

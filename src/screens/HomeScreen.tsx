@@ -43,7 +43,7 @@ export default function HomeScreen({navigation}: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader eyebrow="HOME LEDGER" title={`Good to see you${user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.`} />
+      <AppHeader eyebrow="PAISA" title={`Good to see you${user?.user_metadata?.display_name ? `, ${user.user_metadata.display_name}` : ''}.`} />
       <View style={styles.overview}>
         <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
         <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>

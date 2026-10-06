@@ -1,6 +1,6 @@
-# Home Ledger
+# Paisa
 
-Home Ledger is a React Native CLI app for tracking personal home income and expenses, gold holdings, fixed deposits, and loans. The app uses independent bottom-tab modules for each area, with realtime updates and user-owned Supabase data.
+Paisa is a React Native CLI app for tracking personal income and expenses, gold holdings, fixed deposits, and loans. The app uses independent bottom-tab modules for each area, with realtime updates and user-owned Supabase data.
 
 ## Stack
 
