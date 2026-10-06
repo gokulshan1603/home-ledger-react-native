@@ -1,5 +1,6 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {Gem, Plus} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -21,8 +22,16 @@ export default function GoldScreen({navigation}: Props) {
   const {items, loading, error, refresh, reload} = useGold();
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
+  const refreshOnFocus = useRef(false);
   const activeItems = useMemo(() => items.filter(item => item.status === 'active'), [items]);
   const totalWeight = useMemo(() => activeItems.reduce((sum, item) => sum + (item.weight ?? 0), 0), [activeItems]);
+
+  useFocusEffect(useCallback(() => {
+    if (refreshOnFocus.current) {
+      refreshOnFocus.current = false;
+      reload();
+    }
+  }, [reload]));
 
   const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
 
@@ -39,8 +48,18 @@ export default function GoldScreen({navigation}: Props) {
     }
   };
 
+  const openAddGold = () => {
+    refreshOnFocus.current = true;
+    navigation.navigate('AddGold');
+  };
+  const openEditGold = (id: string) => {
+    refreshOnFocus.current = true;
+    const holding = items.find(item => item.id === id);
+    if (holding) navigation.navigate('AddGold', {holding});
+  };
+
   return <SafeAreaView style={styles.safeArea} edges={['top']}>
-    <AppHeader title="Gold" rightAction={{accessibilityLabel: 'Add gold holding', onPress: () => navigation.navigate('AddGold'), icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
+    <AppHeader title="Gold" rightAction={{accessibilityLabel: 'Add gold holding', onPress: openAddGold, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
     {loading ? <View style={styles.stateArea}>
       <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
       <Text style={[styles.emptyTitle, styles.loadingText]}>Loading gold holdings…</Text>
@@ -55,7 +74,7 @@ export default function GoldScreen({navigation}: Props) {
         <View style={styles.emptyIcon}><Gem size={25} color={colors.primary} strokeWidth={2.15} /></View>
         <Text style={styles.emptyTitle}>No gold holdings yet</Text>
         <Text style={styles.emptyCopy}>Add your first gold holding to start tracking it.</Text>
-        <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddGold')} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+        <Pressable accessibilityRole="button" onPress={openAddGold} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
           <Plus size={15} color={colors.white} strokeWidth={2.4} />
           <Text style={styles.emptyActionText}>Add holding</Text>
         </Pressable>
@@ -76,7 +95,7 @@ export default function GoldScreen({navigation}: Props) {
         <Text style={styles.countBadge}>{items.length} {items.length === 1 ? 'item' : 'items'}</Text>
       </View>
       <View style={styles.holdingsCard}>
-        {items.map((item, index) => <Pressable key={item.id} onPress={() => navigation.navigate('AddGold', {holding: item})} onLongPress={() => confirmDelete(item.id)} delayLongPress={450} style={({pressed}) => [styles.row, index < items.length - 1 && styles.rowDivider, pressed && styles.rowPressed]}>
+        {items.map((item, index) => <Pressable key={item.id} onPress={() => openEditGold(item.id)} onLongPress={() => confirmDelete(item.id)} delayLongPress={450} style={({pressed}) => [styles.row, index < items.length - 1 && styles.rowDivider, pressed && styles.rowPressed]}>
           <View style={styles.itemIcon}><Gem size={20} color={colors.primary} strokeWidth={2.15} /></View>
           <View style={styles.details}>
             <Text style={styles.name} numberOfLines={1}>{item.name}</Text>

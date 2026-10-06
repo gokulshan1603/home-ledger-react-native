@@ -1,5 +1,6 @@
-import React, {useMemo, useState} from 'react';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {Landmark, Plus, ReceiptText, Wallet} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {addMonths} from 'date-fns';
@@ -24,7 +25,14 @@ export default function TransactionsScreen({navigation}: Props) {
   const styles = createStyles(colors);
   const [month, setMonth] = useState(new Date());
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
-  const {transactions, allTransactions, loading, error, refresh} = useTransactions(month);
+  const {transactions, allTransactions, loading, error, refresh, reload} = useTransactions(month);
+  const refreshOnFocus = useRef(false);
+  useFocusEffect(useCallback(() => {
+    if (refreshOnFocus.current) {
+      refreshOnFocus.current = false;
+      reload();
+    }
+  }, [reload]));
   const summary = useMonthSummary(transactions);
   const balances = useMemo(() => ({bank: accountBalance(allTransactions, 'bank'), cash: accountBalance(allTransactions, 'cash')}), [allTransactions]);
   const transactionBalances = useMemo(() => {
@@ -46,11 +54,17 @@ export default function TransactionsScreen({navigation}: Props) {
     const id = pendingDeleteId;
     setPendingDeleteId(null);
     await removeTransaction(id);
+    await reload();
+  };
+
+  const openAddEntry = () => {
+    refreshOnFocus.current = true;
+    navigation.navigate('AddEntry');
   };
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="Transactions" rightAction={{accessibilityLabel: 'Add entry', onPress: () => navigation.navigate('AddEntry'), icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
+      <AppHeader title="Transactions" rightAction={{accessibilityLabel: 'Add entry', onPress: openAddEntry, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
       {loading ? <View style={styles.stateArea}>
         <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
         <Text style={[styles.emptyTitle, styles.loadingText]}>Loading transactions…</Text>
@@ -62,7 +76,7 @@ export default function TransactionsScreen({navigation}: Props) {
           <View style={styles.emptyIcon}><ReceiptText size={24} color={colors.primary} strokeWidth={2.2} /></View>
           <Text style={styles.emptyTitle}>Nothing logged yet</Text>
           <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
-          <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+          <Pressable accessibilityRole="button" onPress={openAddEntry} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
             <Plus size={15} color={colors.white} strokeWidth={2.4} />
             <Text style={styles.emptyActionText}>Add entry</Text>
           </Pressable>
@@ -87,7 +101,7 @@ export default function TransactionsScreen({navigation}: Props) {
           <FlatList
             data={transactions}
             keyExtractor={item => item.id}
-            renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === transactions.length - 1} onPress={() => navigation.navigate('AddEntry', {transaction: item})} onLongPress={() => confirmDelete(item.id)} />}
+            renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === transactions.length - 1} onPress={() => { refreshOnFocus.current = true; navigation.navigate('AddEntry', {transaction: item}); }} onLongPress={() => confirmDelete(item.id)} />}
             style={styles.transactionsList}
             contentContainerStyle={styles.listContent}
             ListFooterComponent={<View style={styles.footer} />}
