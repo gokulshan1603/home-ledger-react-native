@@ -3,7 +3,7 @@ import {Alert, FlatList, Pressable, RefreshControl, StyleSheet, Text, View} from
 import {Landmark, Plus, Wallet} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {addMonths} from 'date-fns';
-import {HomeScreenProps} from '../navigation/types';
+import {TransactionsScreenProps} from '../navigation/types';
 import {useTransactions} from '../hooks/useTransactions';
 import {useMonthSummary} from '../hooks/useMonthSummary';
 import {accountBalance} from '../utils/summary';
@@ -16,9 +16,9 @@ import AppHeader from '../components/AppHeader';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 
-type Props = HomeScreenProps;
+type Props = TransactionsScreenProps;
 
-export default function HomeScreen({navigation}: Props) {
+export default function TransactionsScreen({navigation}: Props) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const [month, setMonth] = useState(new Date());

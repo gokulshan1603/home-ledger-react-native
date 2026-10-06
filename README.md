@@ -53,7 +53,7 @@ npm test -- --runInBand --watchman=false
 
 ## App structure
 
-- `src/screens` contains Login, Home, Gold, FD, Loans, and independent add/edit screens.
+- `src/screens` contains Login, Transactions, Gold, FD, Loans, Profile, and independent add/edit screens.
 - `src/services` contains the Supabase Auth and database boundary.
 - `src/config/supabase.ts` creates the Supabase client and persists sessions with AsyncStorage.
 - `src/hooks` connects realtime listeners for transactions, Gold, FDs, and Loans.
@@ -61,4 +61,4 @@ npm test -- --runInBand --watchman=false
 - `src/components` contains the reusable controls and transaction list UI.
 - `SAVINGS_AND_LOANS_PLAN.md` documents the independent module architecture and rollout plan.
 
-After authentication, the app opens four bottom tabs: Home, Gold, FD, and Loans. The new modules have separate tables, services, calculations, and forms; their records are not linked to the Transactions module.
+After authentication, the app opens five bottom tabs: Transactions, Gold, FD, Loans, and Profile. The modules have separate tables, services, calculations, and forms; their records are not linked to one another.

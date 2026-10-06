@@ -4,8 +4,8 @@ import {FixedDeposit} from '../types/fixedDeposit';
 import {Loan} from '../types/loan';
 import {Transaction} from '../types/transaction';
 
-export type HomeStackParamList = {
-  Home: undefined;
+export type TransactionsStackParamList = {
+  Transactions: undefined;
   AddEntry: {transaction?: Transaction} | undefined;
 };
 
@@ -29,5 +29,5 @@ export type RootStackParamList = {
   MainTabs: undefined;
 };
 
-export type HomeScreenProps = NativeStackScreenProps<HomeStackParamList, 'Home'>;
-export type AddEntryScreenProps = NativeStackScreenProps<HomeStackParamList, 'AddEntry'>;
+export type TransactionsScreenProps = NativeStackScreenProps<TransactionsStackParamList, 'Transactions'>;
+export type AddEntryScreenProps = NativeStackScreenProps<TransactionsStackParamList, 'AddEntry'>;
