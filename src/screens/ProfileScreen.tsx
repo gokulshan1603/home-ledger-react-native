@@ -1,5 +1,5 @@
-import React from 'react';
-import {Alert, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useState} from 'react';
+import {Modal, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {LogOut, Moon, Sun, UserRound} from 'lucide-react-native';
 import {useAuth} from '../context/AuthContext';
 import {ThemeMode, useTheme} from '../context/ThemeContext';
@@ -12,12 +12,17 @@ export default function ProfileScreen() {
   const {user} = useAuth();
   const {colors, mode, setMode} = useTheme();
   const styles = createStyles(colors);
+  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
   const displayName = user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? 'Paisa user';
   const chooseMode = (nextMode: ThemeMode) => setMode(nextMode);
-  const confirmLogout = () => Alert.alert('Log out?', 'You can sign in again anytime.', [{text: 'Cancel', style: 'cancel'}, {text: 'Log out', style: 'destructive', onPress: logout}]);
+  const confirmLogout = () => setShowLogoutDialog(true);
+  const finishLogout = () => {
+    setShowLogoutDialog(false);
+    logout().catch(() => undefined);
+  };
   return (
     <SafeAreaView style={styles.flex} edges={['top']}>
-      <AppHeader title="Your profile" />
+      <AppHeader title="Profile" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
           <View style={styles.avatar}><UserRound size={24} color={colors.primary} strokeWidth={2.2} /></View>
@@ -44,6 +49,22 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Log out</Text>
         </Pressable>
       </ScrollView>
+      <Modal transparent visible={showLogoutDialog} animationType="fade" onRequestClose={() => setShowLogoutDialog(false)}>
+        <View style={styles.modalBackdrop}>
+          <View accessibilityViewIsModal style={styles.logoutDialog}>
+            <Text style={styles.dialogTitle}>Log out?</Text>
+            <Text style={styles.dialogMessage}>You can sign in again anytime.</Text>
+            <View style={styles.dialogActions}>
+              <Pressable accessibilityRole="button" onPress={() => setShowLogoutDialog(false)} style={({pressed}) => [styles.cancelButton, pressed && styles.dialogPressed]}>
+                <Text style={styles.cancelButtonText}>Cancel</Text>
+              </Pressable>
+              <Pressable accessibilityRole="button" onPress={finishLogout} style={({pressed}) => [styles.confirmButton, pressed && styles.dialogPressed]}>
+                <Text style={styles.confirmButtonText}>Log out</Text>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -57,14 +78,24 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   name: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   email: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xl, marginBottom: spacing.sm},
-  themeCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  themeOptions: {flexDirection: 'row', gap: spacing.xs},
-  themeOption: {flex: 1, minHeight: controlHeight.sm, paddingHorizontal: spacing.xs, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
+  themeCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.sm},
+  themeOptions: {flexDirection: 'row', gap: 2, padding: 3, borderRadius: radius.md, backgroundColor: colors.surfaceMuted},
+  themeOption: {flex: 1, minHeight: controlHeight.sm, paddingHorizontal: spacing.xs, borderRadius: radius.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   themeSelected: {backgroundColor: colors.primary},
-  themeText: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
+  themeText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
   themeSelectedText: {color: colors.white},
   optionPressed: {opacity: 0.8},
-  logout: {minHeight: controlHeight.md, marginTop: spacing.xl, borderRadius: radius.md, borderWidth: 1, borderColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
+  logout: {minHeight: controlHeight.md, marginTop: spacing.xl, paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   logoutText: {color: colors.expense, fontSize: 14, fontWeight: '800'},
   pressed: {opacity: 0.75},
+  modalBackdrop: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg, backgroundColor: colors.modalBackdrop},
+  logoutDialog: {width: '100%', maxWidth: 360, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl},
+  dialogTitle: {color: colors.ink, fontSize: 18, fontWeight: '800'},
+  dialogMessage: {color: colors.inkMuted, fontSize: 14, lineHeight: 18, marginTop: spacing.xs},
+  dialogActions: {flexDirection: 'row', gap: spacing.sm, marginTop: spacing.lg},
+  cancelButton: {flex: 1, minHeight: controlHeight.sm, borderRadius: radius.md, borderWidth: 1, borderColor: colors.line, alignItems: 'center', justifyContent: 'center'},
+  cancelButtonText: {color: colors.ink, fontSize: 13, fontWeight: '800'},
+  confirmButton: {flex: 1, minHeight: controlHeight.sm, borderRadius: radius.md, backgroundColor: colors.expense, alignItems: 'center', justifyContent: 'center'},
+  confirmButtonText: {color: colors.white, fontSize: 13, fontWeight: '800'},
+  dialogPressed: {opacity: 0.78},
 });
