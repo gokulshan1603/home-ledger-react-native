@@ -1,17 +1,16 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {CalendarDays, Save, Trash2} from 'lucide-react-native';
-import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
+import {Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Save, Trash2} from 'lucide-react-native';
 import {AddEntryScreenProps} from '../navigation/types';
 import {CATEGORIES} from '../constants/categories';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import {addTransaction, deleteTransaction, updateTransaction} from '../services/transactionService';
 import {AccountType, TransactionType} from '../types/transaction';
-import {formatDate} from '../utils/format';
 import AmountInput from '../components/AmountInput';
 import AccountToggle from '../components/AccountToggle';
 import CategoryPicker from '../components/CategoryPicker';
+import DateField from '../components/DateField';
 
 type Props = AddEntryScreenProps;
 
@@ -26,7 +25,6 @@ export default function AddEntryScreen({navigation, route}: Props) {
   const [account, setAccount] = useState<AccountType>(existing?.account ?? 'bank');
   const [date, setDate] = useState(existing?.date ?? new Date());
   const [note, setNote] = useState(existing?.note ?? '');
-  const [showDatePicker, setShowDatePicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useLayoutEffect(() => {
@@ -38,15 +36,6 @@ export default function AddEntryScreen({navigation, route}: Props) {
       setCategory(CATEGORIES[type][0]);
     }
   }, [category, type]);
-
-  const onDateChange = (event: DateTimePickerEvent, selectedDate?: Date) => {
-    if (Platform.OS === 'android') {
-      setShowDatePicker(false);
-    }
-    if (event.type !== 'dismissed' && selectedDate) {
-      setDate(selectedDate);
-    }
-  };
 
   const save = async () => {
     const numericAmount = Number(amount);
@@ -88,14 +77,12 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <Text style={styles.label}>Account</Text>
         <AccountToggle value={account} onChange={setAccount} />
         <Text style={styles.label}>Date</Text>
-        <Pressable onPress={() => setShowDatePicker(true)} style={({pressed}) => [styles.dateButton, pressed && styles.fieldPressed]}><Text style={styles.dateText}>{formatDate(date)}</Text><CalendarDays size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
+        <DateField value={date} onChange={setDate} />
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
         <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Save size={17} color={colors.white} strokeWidth={2.25} /></>}</Pressable>
         {editing ? <Pressable onPress={remove} style={({pressed}) => [styles.deleteButton, pressed && styles.deletePressed]}><Trash2 size={16} color={colors.expense} strokeWidth={2.25} /><Text style={styles.deleteText}>Delete entry</Text></Pressable> : null}
       </ScrollView>
-      {Platform.OS === 'android' && showDatePicker ? <DateTimePicker value={date} mode="date" onChange={onDateChange} /> : null}
-      {Platform.OS === 'ios' ? <Modal transparent visible={showDatePicker} animationType="slide" onRequestClose={() => setShowDatePicker(false)}><View style={styles.modalBackdrop}><View style={styles.dateModal}><View style={styles.modalHeader}><Text style={styles.modalTitle}>Choose date</Text><Pressable onPress={() => setShowDatePicker(false)}><Text style={styles.done}>Done</Text></Pressable></View><DateTimePicker value={date} mode="date" display="spinner" onChange={onDateChange} /></View></View></Modal> : null}
     </KeyboardAvoidingView>
   );
 }
@@ -111,9 +98,6 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   selectedTypeText: {color: colors.white},
   label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.lg, marginBottom: spacing.sm},
   optional: {color: colors.inkMuted, fontWeight: '500'},
-  dateButton: {minHeight: controlHeight.md, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  fieldPressed: {backgroundColor: colors.surfaceMuted},
-  dateText: {color: colors.ink, fontSize: 14, fontWeight: '600'},
   input: {backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
   noteInput: {minHeight: 68, textAlignVertical: 'top'},
   saveButton: {minHeight: controlHeight.lg, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},
@@ -123,9 +107,4 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   deleteButton: {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.md},
   deletePressed: {opacity: 0.65},
   deleteText: {color: colors.expense, fontSize: 12, fontWeight: '700'},
-  modalBackdrop: {flex: 1, justifyContent: 'flex-end', backgroundColor: colors.modalBackdrop},
-  dateModal: {backgroundColor: colors.surface, borderTopLeftRadius: radius.lg, borderTopRightRadius: radius.lg, padding: spacing.lg},
-  modalHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  modalTitle: {color: colors.ink, fontSize: 15, fontWeight: '800'},
-  done: {color: colors.primary, fontWeight: '800'},
 });
