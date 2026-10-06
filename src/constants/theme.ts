@@ -53,8 +53,8 @@ export const lightColors: Colors = {
 export const darkColors: Colors = {
   ink: '#E8EAED',
   inkMuted: '#9AA0A6',
-  canvas: '#202124',
-  surface: '#292A2D',
+  canvas: '#1B1C1F',
+  surface: '#242528',
   surfaceMuted: '#3C4043',
   line: '#5F6368',
   primary: '#4285F4',
