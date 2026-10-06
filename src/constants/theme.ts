@@ -57,7 +57,7 @@ export const darkColors: Colors = {
   surface: '#292A2D',
   surfaceMuted: '#3C4043',
   line: '#5F6368',
-  primary: '#8AB4F8',
+  primary: '#5D8BCB',
   primaryDark: '#669DF6',
   primarySoft: '#283E5D',
   income: '#81C995',

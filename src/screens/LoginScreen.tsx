@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Eye, EyeOff, WalletCards} from 'lucide-react-native';
+import {Eye, EyeOff, LogIn, WalletCards} from 'lucide-react-native';
 import {login} from '../services/authService';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
-import ThemeToggle from '../components/ThemeToggle';
 
 export default function LoginScreen() {
   const {colors} = useTheme();
@@ -34,7 +33,6 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <View style={styles.themeRow}><ThemeToggle /></View>
         <View style={styles.brandMark}><WalletCards size={29} color={colors.white} strokeWidth={2.25} /></View>
         <Text style={styles.kicker}>HOME LEDGER</Text>
         <Text style={styles.title}>Your home, in balance.</Text>
@@ -51,7 +49,7 @@ export default function LoginScreen() {
           </View>
           {error ? <Text style={styles.error}>{error}</Text> : null}
           <Pressable onPress={submit} disabled={submitting} style={({pressed}) => [styles.button, pressed && styles.buttonPressed, submitting && styles.disabled]}>
-            {submitting ? <ActivityIndicator color={colors.white} /> : <Text style={styles.buttonText}>Log in</Text>}
+            {submitting ? <ActivityIndicator color={colors.white} /> : <><Text style={styles.buttonText}>Log in</Text><LogIn size={17} color={colors.white} strokeWidth={2.25} /></>}
           </Pressable>
         </View>
       </ScrollView>
@@ -62,7 +60,6 @@ export default function LoginScreen() {
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {flexGrow: 1, justifyContent: 'center', padding: spacing.lg},
-  themeRow: {alignItems: 'flex-end', marginBottom: spacing.xl},
   brandMark: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.primary, marginBottom: spacing.md},
   kicker: {color: colors.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1.6},
   title: {color: colors.ink, fontSize: 28, lineHeight: 34, fontWeight: '800', marginTop: spacing.sm, maxWidth: 300},
@@ -75,7 +72,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   passwordToggle: {height: controlHeight.sm, width: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill},
   passwordTogglePressed: {backgroundColor: colors.surfaceMuted},
   error: {color: colors.expense, fontSize: 12, marginTop: spacing.sm},
-  button: {minHeight: controlHeight.lg, backgroundColor: colors.primary, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg},
+  button: {minHeight: controlHeight.lg, backgroundColor: colors.primary, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.lg},
   buttonPressed: {backgroundColor: colors.primaryDark},
   disabled: {opacity: 0.7},
   buttonText: {color: colors.white, fontSize: 14, fontWeight: '800'},

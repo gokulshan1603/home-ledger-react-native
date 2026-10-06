@@ -1,7 +1,7 @@
 import React from 'react';
 import {StyleSheet, TextInput, View} from 'react-native';
 import {IndianRupee} from 'lucide-react-native';
-import {Colors, radius, spacing} from '../constants/theme';
+import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 
 interface Props {
@@ -30,6 +30,6 @@ export default function AmountInput({value, onChangeText}: Props) {
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  wrapper: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: spacing.xs},
+  wrapper: {minHeight: controlHeight.md, flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, paddingHorizontal: spacing.md},
   input: {flex: 1, color: colors.ink, fontSize: 32, fontWeight: '800', padding: 0, marginLeft: spacing.sm},
 });

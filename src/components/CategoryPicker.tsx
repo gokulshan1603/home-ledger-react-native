@@ -8,7 +8,7 @@ export default function CategoryPicker({categories, value, onChange}: {categorie
   const styles = createStyles(colors);
 
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.content}>
+    <ScrollView style={styles.scroll} nestedScrollEnabled showsVerticalScrollIndicator={false} contentContainerStyle={styles.content}>
       {categories.map(category => (
         <Pressable key={category} onPress={() => onChange(category)} style={({pressed}) => [styles.chip, value === category && styles.selected, pressed && styles.pressed]}>
           <Text style={[styles.text, value === category && styles.selectedText]}>{category}</Text>
@@ -19,8 +19,9 @@ export default function CategoryPicker({categories, value, onChange}: {categorie
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  content: {gap: spacing.sm, paddingVertical: 0},
-  chip: {paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: colors.surface},
+  scroll: {maxHeight: 136},
+  content: {flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm, paddingVertical: 0},
+  chip: {paddingHorizontal: spacing.md, paddingVertical: spacing.xs, minHeight: controlHeight.xs, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill, backgroundColor: colors.surface},
   selected: {backgroundColor: colors.primary},
   pressed: {opacity: 0.78},
   text: {color: colors.inkMuted, fontWeight: '600'},

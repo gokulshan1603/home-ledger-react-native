@@ -29,6 +29,15 @@ export default function HomeScreen({navigation}: Props) {
   const {transactions, allTransactions, loading, error} = useTransactions(month);
   const summary = useMonthSummary(transactions);
   const balances = useMemo(() => ({bank: accountBalance(allTransactions, 'bank'), cash: accountBalance(allTransactions, 'cash')}), [allTransactions]);
+  const transactionBalances = useMemo(() => {
+    const running = {bank: 0, cash: 0};
+    const result = new Map<string, number>();
+    [...allTransactions].reverse().forEach(transaction => {
+      running[transaction.account] += transaction.type === 'income' ? transaction.amount : -transaction.amount;
+      result.set(transaction.id, running[transaction.account]);
+    });
+    return result;
+  }, [allTransactions]);
   const now = new Date();
   const isLatestMonth = month.getFullYear() === now.getFullYear() && month.getMonth() === now.getMonth();
 
@@ -46,7 +55,7 @@ export default function HomeScreen({navigation}: Props) {
       <FlatList
         data={transactions}
         keyExtractor={item => item.id}
-        renderItem={({item}) => <TransactionItem transaction={item} onPress={() => navigation.navigate('AddEntry', {transaction: item})} onLongPress={() => confirmDelete(item.id)} />}
+        renderItem={({item}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} onPress={() => navigation.navigate('AddEntry', {transaction: item})} onLongPress={() => confirmDelete(item.id)} />}
         contentContainerStyle={styles.listContent}
         refreshControl={<RefreshControl refreshing={loading} tintColor={colors.primary} />}
         ListHeaderComponent={<View>

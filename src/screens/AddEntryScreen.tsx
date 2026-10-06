@@ -1,6 +1,6 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Modal, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {CalendarDays, Trash2} from 'lucide-react-native';
+import {CalendarDays, Save, Trash2} from 'lucide-react-native';
 import DateTimePicker, {DateTimePickerEvent} from '@react-native-community/datetimepicker';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {RootStackParamList} from '../navigation/types';
@@ -92,7 +92,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <Pressable onPress={() => setShowDatePicker(true)} style={({pressed}) => [styles.dateButton, pressed && styles.fieldPressed]}><Text style={styles.dateText}>{formatDate(date)}</Text><CalendarDays size={19} color={colors.primary} strokeWidth={2.25} /></Pressable>
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
-        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Saving…' : editing ? 'Save changes' : 'Save entry'}</Text></Pressable>
+        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Save size={17} color={colors.white} strokeWidth={2.25} /></>}</Pressable>
         {editing ? <Pressable onPress={remove} style={({pressed}) => [styles.deleteButton, pressed && styles.deletePressed]}><Trash2 size={16} color={colors.expense} strokeWidth={2.25} /><Text style={styles.deleteText}>Delete entry</Text></Pressable> : null}
       </ScrollView>
       {Platform.OS === 'android' && showDatePicker ? <DateTimePicker value={date} mode="date" onChange={onDateChange} /> : null}
@@ -103,21 +103,21 @@ export default function AddEntryScreen({navigation, route}: Props) {
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
-  content: {padding: spacing.lg, paddingBottom: spacing.xl},
+  content: {paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.xl * 3},
   typeToggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
-  typeOption: {flex: 1, alignItems: 'center', paddingVertical: spacing.sm, borderRadius: radius.sm},
+  typeOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
   expenseSelected: {backgroundColor: colors.expense},
   incomeSelected: {backgroundColor: colors.income},
   typeText: {color: colors.inkMuted, fontWeight: '700'},
   selectedTypeText: {color: colors.white},
-  label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.md, marginBottom: spacing.sm},
+  label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.lg, marginBottom: spacing.sm},
   optional: {color: colors.inkMuted, fontWeight: '500'},
   dateButton: {minHeight: controlHeight.md, paddingHorizontal: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   fieldPressed: {backgroundColor: colors.surfaceMuted},
   dateText: {color: colors.ink, fontSize: 14, fontWeight: '600'},
   input: {backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md, paddingVertical: spacing.sm},
   noteInput: {minHeight: 68, textAlignVertical: 'top'},
-  saveButton: {minHeight: controlHeight.lg, borderRadius: radius.md, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginTop: spacing.xl},
+  saveButton: {minHeight: controlHeight.lg, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},
   savePressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.99}]},
   saveText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   disabled: {opacity: 0.65},
