@@ -45,6 +45,6 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   stat: {flex: 1, alignItems: 'flex-start'},
   statLabel: {color: colors.white, fontSize: 13, fontWeight: '600', marginBottom: spacing.xs},
   amount: {alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm, fontSize: 15, fontWeight: '800'},
-  income: {color: colors.income, backgroundColor: colors.incomeSoft},
-  expense: {color: colors.expense, backgroundColor: colors.expenseSoft},
+  income: {color: colors.white, backgroundColor: colors.income},
+  expense: {color: colors.white, backgroundColor: colors.expense},
 });
