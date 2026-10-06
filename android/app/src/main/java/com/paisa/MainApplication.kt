@@ -1,4 +1,4 @@
-package com.homeledger
+package com.paisa
 
 import android.app.Application
 import com.facebook.react.PackageList

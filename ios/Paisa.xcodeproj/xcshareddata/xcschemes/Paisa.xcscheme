@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "HomeLedger.app"
-               BlueprintName = "HomeLedger"
-               ReferencedContainer = "container:HomeLedger.xcodeproj">
+               BuildableName = "Paisa.app"
+               BlueprintName = "Paisa"
+               ReferencedContainer = "container:Paisa.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "HomeLedgerTests.xctest"
-               BlueprintName = "HomeLedgerTests"
-               ReferencedContainer = "container:HomeLedger.xcodeproj">
+               BuildableName = "PaisaTests.xctest"
+               BlueprintName = "PaisaTests"
+               ReferencedContainer = "container:Paisa.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "HomeLedger.app"
-            BlueprintName = "HomeLedger"
-            ReferencedContainer = "container:HomeLedger.xcodeproj">
+            BuildableName = "Paisa.app"
+            BlueprintName = "Paisa"
+            ReferencedContainer = "container:Paisa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "HomeLedger.app"
-            BlueprintName = "HomeLedger"
-            ReferencedContainer = "container:HomeLedger.xcodeproj">
+            BuildableName = "Paisa.app"
+            BlueprintName = "Paisa"
+            ReferencedContainer = "container:Paisa.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

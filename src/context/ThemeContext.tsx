@@ -13,7 +13,8 @@ interface ThemeContextValue {
   setMode: (mode: ThemeMode) => void;
 }
 
-const STORAGE_KEY = '@home-ledger/theme-mode';
+const STORAGE_KEY = '@paisa/theme-mode';
+const LEGACY_STORAGE_KEY = '@home-ledger/theme-mode';
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export const ThemeProvider = ({children}: {children: React.ReactNode}) => {
@@ -21,9 +22,14 @@ export const ThemeProvider = ({children}: {children: React.ReactNode}) => {
   const [mode, setMode] = useState<ThemeMode>('system');
 
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then(savedMode => {
-      if (savedMode === 'light' || savedMode === 'dark' || savedMode === 'system') {
-        setMode(savedMode);
+    AsyncStorage.getItem(STORAGE_KEY).then(async savedMode => {
+      const legacyMode = savedMode ? null : await AsyncStorage.getItem(LEGACY_STORAGE_KEY);
+      const storedMode = savedMode ?? legacyMode;
+      if (storedMode === 'light' || storedMode === 'dark' || storedMode === 'system') {
+        setMode(storedMode);
+        if (!savedMode && legacyMode) {
+          await AsyncStorage.setItem(STORAGE_KEY, legacyMode);
+        }
       }
     });
   }, []);
