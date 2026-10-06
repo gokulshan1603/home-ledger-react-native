@@ -7,7 +7,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {GoldStackParamList} from '../navigation/types';
 import {useGold} from '../hooks/useGold';
 import {deleteGold} from '../services/goldService';
-import {formatCurrency, formatShortDate} from '../utils/format';
+import {formatShortDate} from '../utils/format';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import AppHeader from '../components/AppHeader';
@@ -24,7 +24,7 @@ export default function GoldScreen({navigation}: Props) {
   const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
   const hasFocused = useRef(false);
   const activeItems = useMemo(() => items.filter(item => item.status === 'active'), [items]);
-  const total = useMemo(() => activeItems.reduce((sum, item) => sum + (item.currentValue ?? item.purchaseAmount), 0), [activeItems]);
+  const totalWeight = useMemo(() => activeItems.reduce((sum, item) => sum + (item.weight ?? 0), 0), [activeItems]);
 
   useFocusEffect(useCallback(() => {
     if (hasFocused.current) {
@@ -73,8 +73,8 @@ export default function GoldScreen({navigation}: Props) {
       <View style={styles.summaryCard}>
         <View style={styles.summaryTop}>
           <View style={styles.summaryCopy}>
-            <Text style={styles.summaryLabel}>Total active value</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(total)}</Text>
+            <Text style={styles.summaryLabel}>Total active weight</Text>
+            <Text style={styles.summaryValue}>{totalWeight ? `${totalWeight}g` : '—'}</Text>
           </View>
           <View style={styles.summaryIcon}><Gem size={25} color={colors.primary} strokeWidth={2.1} /></View>
         </View>
@@ -92,8 +92,8 @@ export default function GoldScreen({navigation}: Props) {
             <Text style={styles.meta} numberOfLines={1}>{item.status === 'active' ? 'Active' : 'Sold'} · {formatShortDate(item.purchasedAt)}{item.weight ? ` · ${item.weight}g` : ''}</Text>
           </View>
           <View style={styles.amount}>
-            <Text style={styles.value}>{formatCurrency(item.currentValue ?? item.purchaseAmount)}</Text>
-            <Text style={styles.amountLabel}>{item.currentValue == null ? 'Purchase value' : 'Current value'}</Text>
+            <Text style={styles.value}>{item.weight ? `${item.weight}g` : '—'}</Text>
+            <Text style={styles.amountLabel}>Weight</Text>
           </View>
         </Pressable>)}
       </View>

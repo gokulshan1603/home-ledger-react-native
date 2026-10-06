@@ -5,9 +5,6 @@ export interface GoldHolding {
   uid: string;
   name: string;
   weight?: number;
-  purity?: number;
-  purchaseAmount: number;
-  currentValue?: number;
   purchasedAt: Date;
   soldAt?: Date;
   status: GoldStatus;
