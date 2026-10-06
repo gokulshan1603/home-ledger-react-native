@@ -21,7 +21,6 @@ export default function SummaryCard({income, expense, net}: {income: number; exp
         <Rect x="0" y="0" width="1" height="1" fill="url(#monthlyOverviewGradient)" />
       </Svg>
       <View style={styles.content}>
-        <Text style={styles.eyebrow}>MONTHLY OVERVIEW</Text>
         <View style={styles.netRow}>
           <Text style={styles.netLabel}>Net this month</Text>
           <Text style={[styles.net, net < 0 && styles.negative]}>{net < 0 ? '-' : ''}{formatCurrency(Math.abs(net))}</Text>
@@ -37,14 +36,13 @@ export default function SummaryCard({income, expense, net}: {income: number; exp
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   card: {backgroundColor: colors.primaryDark, borderRadius: radius.lg, overflow: 'hidden'},
-  content: {padding: spacing.lg, zIndex: 1},
-  eyebrow: {color: colors.white, fontSize: 11, fontWeight: '800', letterSpacing: 1.2},
-  netRow: {marginTop: spacing.sm, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between'},
+  content: {padding: spacing.md, zIndex: 1},
+  netRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   netLabel: {color: colors.white, fontSize: 15, fontWeight: '600'},
   net: {color: colors.white, fontSize: 24, fontWeight: '800'},
   negative: {color: colors.summaryNegative},
-  stats: {flexDirection: 'row', gap: spacing.lg},
-  stat: {flex: 1},
+  stats: {flexDirection: 'row', gap: spacing.lg, marginTop: spacing.sm},
+  stat: {flex: 1, alignItems: 'flex-start'},
   statLabel: {color: colors.white, fontSize: 13, fontWeight: '600', marginBottom: spacing.xs},
   amount: {alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm, fontSize: 15, fontWeight: '800'},
   income: {color: colors.income, backgroundColor: colors.incomeSoft},

@@ -6,12 +6,12 @@ import {useTheme} from '../context/ThemeContext';
 import {formatCurrency, formatShortDate} from '../utils/format';
 import {Transaction} from '../types/transaction';
 
-export default function TransactionItem({transaction, balance, onPress, onLongPress}: {transaction: Transaction; balance: number; onPress: () => void; onLongPress: () => void}) {
+export default function TransactionItem({transaction, balance, isLast, onPress, onLongPress}: {transaction: Transaction; balance: number; isLast: boolean; onPress: () => void; onLongPress: () => void}) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const income = transaction.type === 'income';
   return (
-    <Pressable accessibilityRole="button" accessibilityLabel={`${transaction.category}, ${income ? 'income' : 'expense'} ${formatCurrency(transaction.amount)}, balance ${formatCurrency(balance)}`} accessibilityHint="Tap to edit. Long press to delete." onPress={onPress} onLongPress={onLongPress} delayLongPress={450} style={({pressed}) => [styles.row, pressed && styles.pressed]}>
+    <Pressable accessibilityRole="button" accessibilityLabel={`${transaction.category}, ${income ? 'income' : 'expense'} ${formatCurrency(transaction.amount)}, balance ${formatCurrency(balance)}`} accessibilityHint="Tap to edit. Long press to delete." onPress={onPress} onLongPress={onLongPress} delayLongPress={450} style={({pressed}) => [styles.row, !isLast && styles.rowDivider, pressed && styles.pressed]}>
       <View style={[styles.icon, income ? styles.incomeIcon : styles.expenseIcon]}>{income ? <ArrowUp size={20} color={colors.income} strokeWidth={2.5} /> : <ArrowDown size={20} color={colors.expense} strokeWidth={2.5} />}</View>
       <View style={styles.details}>
         <Text style={styles.category} numberOfLines={1}>{transaction.category}</Text>
@@ -26,7 +26,8 @@ export default function TransactionItem({transaction, balance, onPress, onLongPr
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md, marginTop: spacing.sm, backgroundColor: colors.surface, borderRadius: radius.md},
+  row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
+  rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
   pressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.99}]},
   icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
   incomeIcon: {backgroundColor: colors.incomeSoft},
