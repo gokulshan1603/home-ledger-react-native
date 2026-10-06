@@ -12,7 +12,7 @@ export default function DateField({value, onChange}: {value: Date; onChange: (va
   const [visible, setVisible] = useState(false);
   const onDateChange = (event: DateTimePickerEvent, selected?: Date) => { if (Platform.OS === 'android') setVisible(false); if (event.type !== 'dismissed' && selected) onChange(selected); };
   return <>
-    <Pressable onPress={() => setVisible(true)} style={({pressed}) => [styles.field, pressed && styles.pressed]}><Text style={styles.text}>{formatDate(value)}</Text><CalendarDays size={18} color={colors.primary} strokeWidth={2.25} /></Pressable>
+    <Pressable onPress={() => setVisible(true)} style={({pressed}) => [styles.field, pressed && styles.pressed]}><Text style={styles.text}>{formatDate(value)}</Text><CalendarDays size={18} color={colors.ink} strokeWidth={2.25} /></Pressable>
     {Platform.OS === 'android' && visible ? <DateTimePicker value={value} mode="date" onChange={onDateChange} positiveButton={{label: 'Done', textColor: colors.primary}} negativeButton={{label: 'Cancel', textColor: colors.inkMuted}} /> : null}
     {Platform.OS === 'ios' ? <Modal transparent visible={visible} animationType="slide" onRequestClose={() => setVisible(false)}><View style={styles.backdrop}><View style={styles.modal}><View style={styles.header}><Text style={styles.modalTitle}>Choose date</Text><Pressable accessibilityRole="button" onPress={() => setVisible(false)}><Text style={styles.done}>Done</Text></Pressable></View><DateTimePicker value={value} mode="date" display="spinner" textColor={colors.ink} accentColor={colors.primary} themeVariant={isDark ? 'dark' : 'light'} onChange={onDateChange} /></View></View></Modal> : null}
   </>;

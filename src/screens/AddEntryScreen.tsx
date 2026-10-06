@@ -10,7 +10,7 @@ import {AccountType, TransactionType} from '../types/transaction';
 import AmountInput from '../components/AmountInput';
 import AccountToggle from '../components/AccountToggle';
 import CategoryPicker from '../components/CategoryPicker';
-import DateField from '../components/DateField';
+import ThemedDatePicker from '../components/ThemedDatePicker';
 
 type Props = AddEntryScreenProps;
 
@@ -77,7 +77,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <Text style={styles.label}>Account</Text>
         <AccountToggle value={account} onChange={setAccount} />
         <Text style={styles.label}>Date</Text>
-        <DateField value={date} onChange={setDate} />
+        <ThemedDatePicker value={date} onChange={setDate} />
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
         <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Save size={17} color={colors.white} strokeWidth={2.25} /></>}</Pressable>
