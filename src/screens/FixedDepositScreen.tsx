@@ -99,11 +99,11 @@ export default function FixedDepositScreen({navigation}: Props) {
           <View style={styles.itemIcon}><BadgeIndianRupee size={20} color={colors.primary} strokeWidth={2.15} /></View>
           <View style={styles.details}>
             <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
-            <Text style={styles.meta} numberOfLines={1}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)} · Matures {formatShortDate(item.maturityAt)}</Text>
+            <Text style={styles.meta} numberOfLines={1}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)} · {item.interestFrequency === 'on_maturity' ? 'On maturity' : item.interestFrequency.charAt(0).toUpperCase() + item.interestFrequency.slice(1)}{item.interestRate ? ` · ${item.interestRate}%` : ''} · Matures {formatShortDate(item.maturityAt)}</Text>
           </View>
           <View style={styles.amount}>
-            <Text style={styles.value}>{formatCurrency(item.maturityAmount ?? item.principal)}</Text>
-            <Text style={styles.amountLabel}>{item.maturityAmount == null ? 'Principal' : 'Maturity amount'}</Text>
+            <Text style={styles.value}>{formatCurrency(item.maturityAmount)}</Text>
+            <Text style={styles.amountLabel}>Maturity amount</Text>
           </View>
         </Pressable>)}
       </View>
