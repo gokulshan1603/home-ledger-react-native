@@ -1,5 +1,6 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
+import Svg, {Defs, LinearGradient, Rect, Stop} from 'react-native-svg';
 import {useFocusEffect} from '@react-navigation/native';
 import {BadgeIndianRupee, Plus} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -85,29 +86,27 @@ export default function FixedDepositScreen({navigation}: Props) {
       </View>
     </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
       <View style={styles.summaryCard}>
-        <View style={styles.summaryGrid}>
-          <View style={styles.summaryMetric}>
-            <Text style={styles.summaryLabel}>Active principal</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(totalPrincipal)}</Text>
+        <Svg style={StyleSheet.absoluteFillObject} viewBox="0 0 1 1" preserveAspectRatio="none">
+          <Defs>
+            <LinearGradient id="fixedDepositSummaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <Stop offset="0%" stopColor={colors.primary} />
+              <Stop offset="100%" stopColor={colors.primaryDark} />
+            </LinearGradient>
+          </Defs>
+          <Rect x="0" y="0" width="1" height="1" fill="url(#fixedDepositSummaryGradient)" />
+        </Svg>
+        <View style={styles.summaryContent}>
+          <View style={styles.summaryTop}>
+            <Text style={styles.summaryTopLabel}>Active principal</Text>
+            <Text style={styles.summaryTopValue}>{formatCurrency(totalPrincipal)}</Text>
           </View>
-          <View style={styles.summaryMetric}>
-            <Text style={styles.summaryLabel}>Monthly interest</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(monthlyInterest)}</Text>
-          </View>
-          <View style={styles.summaryMetric}>
-            <Text style={styles.summaryLabel}>Quarterly interest</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(quarterlyInterest)}</Text>
-          </View>
-          <View style={styles.summaryMetric}>
-            <Text style={styles.summaryLabel}>Annual interest</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(annualInterest)}</Text>
-          </View>
-          <View style={styles.summaryMetric}>
-            <Text style={styles.summaryLabel}>Maturity amount</Text>
-            <Text style={styles.summaryValue}>{formatCurrency(maturityAmount)}</Text>
+          <View style={styles.summaryStats}>
+            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Monthly interest</Text><Text style={styles.summaryAmount}>{formatCurrency(monthlyInterest)}</Text></View>
+            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Quarterly interest</Text><Text style={styles.summaryAmount}>{formatCurrency(quarterlyInterest)}</Text></View>
+            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Annual interest</Text><Text style={styles.summaryAmount}>{formatCurrency(annualInterest)}</Text></View>
+            <View style={styles.summaryStat}><Text style={styles.summaryStatLabel}>Maturity amount</Text><Text style={styles.summaryAmount}>{formatCurrency(maturityAmount)}</Text></View>
           </View>
         </View>
-        <Text style={styles.summaryMeta}>{activeItems.length} active {activeItems.length === 1 ? 'deposit' : 'deposits'}</Text>
       </View>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Deposits</Text>
@@ -136,12 +135,15 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   safeArea: {flex: 1, backgroundColor: colors.canvas},
   contentScroll: {flex: 1},
   content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
-  summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  summaryGrid: {flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.sm, marginVertical: -spacing.xs},
-  summaryMetric: {width: '50%', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
-  summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
-  summaryValue: {color: colors.ink, fontSize: 18, fontWeight: '800', marginTop: spacing.xs},
-  summaryMeta: {color: colors.inkMuted, fontSize: 12, fontWeight: '600', marginTop: spacing.md},
+  summaryCard: {backgroundColor: colors.primaryDark, borderRadius: radius.lg, overflow: 'hidden'},
+  summaryContent: {padding: spacing.md, zIndex: 1},
+  summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  summaryTopLabel: {color: colors.white, fontSize: 15, fontWeight: '600'},
+  summaryTopValue: {color: colors.white, fontSize: 24, fontWeight: '800'},
+  summaryStats: {flexDirection: 'row', flexWrap: 'wrap', marginTop: spacing.sm},
+  summaryStat: {width: '50%', paddingRight: spacing.lg, marginBottom: spacing.sm},
+  summaryStatLabel: {color: colors.white, fontSize: 13, fontWeight: '600', marginBottom: spacing.xs},
+  summaryAmount: {alignSelf: 'flex-start', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm, color: colors.white, backgroundColor: colors.primary, fontSize: 15, fontWeight: '800'},
   sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
