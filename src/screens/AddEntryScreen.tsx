@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Check, Trash2} from 'lucide-react-native';
 import {AddEntryScreenProps} from '../navigation/types';
 import {CATEGORIES} from '../constants/categories';
@@ -99,7 +99,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <ThemedDatePicker value={date} onChange={setDate} />
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
-        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Check size={17} color={colors.white} strokeWidth={2.5} /></>}</Pressable>
+        <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <ActivityIndicator color={colors.white} /> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Check size={17} color={colors.white} strokeWidth={2.5} /></>}</Pressable>
       </ScrollView>
       <ConfirmDialog visible={showDeleteDialog} title="Delete this entry?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setShowDeleteDialog(false)} onConfirm={remove} />
       <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
@@ -123,5 +123,5 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   saveButton: {height: controlHeight.md, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},
   savePressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.99}]},
   saveText: {color: colors.white, fontSize: 14, fontWeight: '800'},
-  disabled: {opacity: 0.65},
+  disabled: {opacity: 0.7},
 });

@@ -71,17 +71,7 @@ export default function TransactionsScreen({navigation}: Props) {
       </View> : error ? <View style={styles.stateArea}>
         <Text style={styles.emptyTitle}>Could not load transactions</Text>
         <Text style={styles.emptyCopy}>{error}</Text>
-      </View> : transactions.length === 0 ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
-        <View style={styles.stateArea}>
-          <View style={styles.emptyIcon}><ReceiptText size={24} color={colors.primary} strokeWidth={2.2} /></View>
-          <Text style={styles.emptyTitle}>Nothing logged yet</Text>
-          <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
-          <Pressable accessibilityRole="button" onPress={openAddEntry} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
-            <Plus size={15} color={colors.white} strokeWidth={2.4} />
-            <Text style={styles.emptyActionText}>Add entry</Text>
-          </Pressable>
-        </View>
-      </ScrollView> : <>
+      </View> : <>
         <ScrollView style={styles.overviewScroll} contentContainerStyle={styles.overview} alwaysBounceVertical refreshControl={refreshControl}>
           <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
           <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
@@ -98,14 +88,22 @@ export default function TransactionsScreen({navigation}: Props) {
           <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.countBadge}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
         </View>
         <View style={styles.transactionsCard}>
-          <FlatList
+          {transactions.length === 0 ? <View style={styles.emptyList}>
+            <View style={styles.emptyIcon}><ReceiptText size={24} color={colors.primary} strokeWidth={2.2} /></View>
+            <Text style={styles.emptyTitle}>Nothing logged yet</Text>
+            <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
+            <Pressable accessibilityRole="button" onPress={openAddEntry} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+              <Plus size={15} color={colors.white} strokeWidth={2.4} />
+              <Text style={styles.emptyActionText}>Add entry</Text>
+            </Pressable>
+          </View> : <FlatList
             data={transactions}
             keyExtractor={item => item.id}
             renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === transactions.length - 1} onPress={() => { refreshOnFocus.current = true; navigation.navigate('AddEntry', {transaction: item}); }} onLongPress={() => confirmDelete(item.id)} />}
             style={styles.transactionsList}
             contentContainerStyle={styles.listContent}
             ListFooterComponent={<View style={styles.footer} />}
-          />
+          />}
         </View>
       </>}
       <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this entry?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingTransaction} />
@@ -148,6 +146,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
   transactionsCard: {flex: 1, marginHorizontal: spacing.lg, marginVertical: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
   transactionsList: {flex: 1},
+  emptyList: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg},
   countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
   emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   loadingText: {marginTop: spacing.sm},
