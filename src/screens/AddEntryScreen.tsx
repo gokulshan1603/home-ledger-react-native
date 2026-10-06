@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {Save, Trash2} from 'lucide-react-native';
 import {AddEntryScreenProps} from '../navigation/types';
@@ -11,6 +11,8 @@ import AmountInput from '../components/AmountInput';
 import AccountToggle from '../components/AccountToggle';
 import CategoryPicker from '../components/CategoryPicker';
 import ThemedDatePicker from '../components/ThemedDatePicker';
+import AppHeader from '../components/AppHeader';
+import ConfirmDialog from '../components/ConfirmDialog';
 
 type Props = AddEntryScreenProps;
 
@@ -26,10 +28,19 @@ export default function AddEntryScreen({navigation, route}: Props) {
   const [date, setDate] = useState(existing?.date ?? new Date());
   const [note, setNote] = useState(existing?.note ?? '');
   const [saving, setSaving] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const openDeleteDialog = useCallback(() => {
+    if (existing) setShowDeleteDialog(true);
+  }, [existing]);
 
   useLayoutEffect(() => {
-    navigation.setOptions({title: editing ? 'Edit entry' : 'Add entry'});
-  }, [editing, navigation]);
+    navigation.setOptions({
+      title: editing ? 'Edit entry' : 'Add entry',
+      // This callback is consumed by React Navigation as a header renderer.
+      // eslint-disable-next-line react/no-unstable-nested-components
+      header: () => <AppHeader title={editing ? 'Edit entry' : 'Add entry'} onBack={() => navigation.goBack()} rightAction={editing ? {accessibilityLabel: 'Delete entry', onPress: openDeleteDialog, variant: 'danger', icon: <Trash2 size={19} color={colors.white} strokeWidth={2.3} />} : undefined} />,
+    });
+  }, [colors.expense, colors.white, editing, navigation, openDeleteDialog]);
 
   useEffect(() => {
     if (!CATEGORIES[type].includes(category)) {
@@ -59,9 +70,15 @@ export default function AddEntryScreen({navigation, route}: Props) {
     }
   };
 
-  const remove = () => {
+  const remove = async () => {
     if (!existing) return;
-    Alert.alert('Delete this entry?', 'This cannot be undone.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: async () => {await deleteTransaction(existing.id); navigation.goBack();}}]);
+    setShowDeleteDialog(false);
+    try {
+      await deleteTransaction(existing.id);
+      navigation.goBack();
+    } catch {
+      Alert.alert('Could not delete entry', 'Please check your connection and try again.');
+    }
   };
 
   return (
@@ -81,8 +98,8 @@ export default function AddEntryScreen({navigation, route}: Props) {
         <Text style={styles.label}>Note <Text style={styles.optional}>(optional)</Text></Text>
         <TextInput value={note} onChangeText={setNote} placeholder="What was this for?" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.noteInput]} multiline maxLength={120} />
         <Pressable onPress={save} disabled={saving} style={({pressed}) => [styles.saveButton, pressed && styles.savePressed, saving && styles.disabled]}>{saving ? <Text style={styles.saveText}>Saving…</Text> : <><Text style={styles.saveText}>{editing ? 'Save changes' : 'Save entry'}</Text><Save size={17} color={colors.white} strokeWidth={2.25} /></>}</Pressable>
-        {editing ? <Pressable onPress={remove} style={({pressed}) => [styles.deleteButton, pressed && styles.deletePressed]}><Trash2 size={16} color={colors.expense} strokeWidth={2.25} /><Text style={styles.deleteText}>Delete entry</Text></Pressable> : null}
       </ScrollView>
+      <ConfirmDialog visible={showDeleteDialog} title="Delete this entry?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setShowDeleteDialog(false)} onConfirm={remove} />
     </KeyboardAvoidingView>
   );
 }
@@ -104,7 +121,4 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   savePressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.99}]},
   saveText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   disabled: {opacity: 0.65},
-  deleteButton: {flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, padding: spacing.md},
-  deletePressed: {opacity: 0.65},
-  deleteText: {color: colors.expense, fontSize: 12, fontWeight: '700'},
 });

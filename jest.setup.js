@@ -6,6 +6,7 @@ jest.mock('lucide-react-native', () => {
   const Icon = () => null;
   return {
     ArrowDown: Icon,
+    ArrowDownUp: Icon,
     ArrowRight: Icon,
     ArrowUp: Icon,
     BadgeIndianRupee: Icon,
@@ -21,6 +22,7 @@ jest.mock('lucide-react-native', () => {
     Moon: Icon,
     Plus: Icon,
     PiggyBank: Icon,
+    ReceiptText: Icon,
     Save: Icon,
     Settings: Icon,
     Sun: Icon,
@@ -74,6 +76,7 @@ jest.mock('@react-native-community/datetimepicker', () => 'DateTimePicker');
 jest.mock('@react-navigation/native', () => ({
   NavigationContainer: ({children}) => children,
   DefaultTheme: {colors: {background: '#fff', card: '#fff', text: '#000', primary: '#000'}},
+  useFocusEffect: callback => callback(),
 }));
 
 jest.mock('@react-navigation/native-stack', () => ({

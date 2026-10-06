@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import {addMonths, startOfMonth} from 'date-fns';
 import {listenAll, listenMonth} from '../services/transactionService';
 import {Transaction} from '../types/transaction';
@@ -8,6 +8,7 @@ export const useTransactions = (month: Date) => {
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshVersion, setRefreshVersion] = useState(0);
 
   useEffect(() => {
     setLoading(true);
@@ -39,7 +40,12 @@ export const useTransactions = (month: Date) => {
       stopMonth();
       stopAll();
     };
-  }, [month]);
+  }, [month, refreshVersion]);
 
-  return {transactions, allTransactions, loading, error};
+  const refresh = useCallback(() => {
+    setLoading(true);
+    setRefreshVersion(current => current + 1);
+  }, []);
+
+  return {transactions, allTransactions, loading, error, refresh, reload: refresh};
 };
