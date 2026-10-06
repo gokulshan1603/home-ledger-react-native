@@ -1,6 +1,8 @@
-import React, {useMemo, useState} from 'react';
-import {Alert, FlatList, Pressable, RefreshControl, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {Plus} from 'lucide-react-native';
+import React, {useCallback, useMemo, useRef, useState} from 'react';
+import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import {HandCoins, Plus} from 'lucide-react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoansStackParamList} from '../navigation/types';
 import {useLoans} from '../hooks/useLoans';
@@ -10,13 +12,144 @@ import {formatCurrency, formatShortDate} from '../utils/format';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import AppHeader from '../components/AppHeader';
+import ConfirmDialog from '../components/ConfirmDialog';
+import MessageDialog from '../components/MessageDialog';
 
 type Props = NativeStackScreenProps<LoansStackParamList, 'Loans'>;
+
 export default function LoansScreen({navigation}: Props) {
-  const {colors} = useTheme(); const styles = createStyles(colors); const {items, loading, error} = useLoans(); const [direction, setDirection] = useState<LoanDirection>('given');
-  const visible = useMemo(() => items.filter(item => item.direction === direction), [direction, items]); const total = useMemo(() => visible.filter(item => item.status === 'active').reduce((sum, item) => sum + (item.outstanding ?? item.principal), 0), [visible]);
-  const remove = (id: string) => Alert.alert('Delete loan?', 'This cannot be undone.', [{text: 'Cancel', style: 'cancel'}, {text: 'Delete', style: 'destructive', onPress: () => deleteLoan(id)}]);
-  return <SafeAreaView style={styles.safe}><AppHeader title="Loans" /><View style={styles.actions}><Pressable accessibilityLabel="Add loan" onPress={() => navigation.navigate('AddLoan')} style={({pressed}) => [styles.add, pressed && styles.pressed]}><Plus size={20} color={colors.white} strokeWidth={2.4} /></Pressable></View><View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={[styles.toggleOption, direction === item && styles.selected]}><Text style={[styles.toggleText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View><FlatList data={visible} keyExtractor={item => item.id} contentContainerStyle={styles.list} refreshControl={<RefreshControl refreshing={loading} tintColor={colors.primary} />} ListHeaderComponent={<View style={styles.summary}><Text style={styles.summaryLabel}>{direction === 'given' ? 'Given outstanding' : 'Taken outstanding'}</Text><Text style={styles.summaryValue}>{formatCurrency(total)}</Text></View>} ListEmptyComponent={!loading ? <View style={styles.empty}><Text style={styles.emptyTitle}>{error ? 'Could not load loans' : `No loans ${direction === 'given' ? 'given' : 'taken'} yet`}</Text><Text style={styles.emptyCopy}>{error ?? 'Add a loan to start tracking it.'}</Text></View> : null} renderItem={({item}) => <Pressable onPress={() => navigation.navigate('AddLoan', {loan: item})} onLongPress={() => remove(item.id)} style={({pressed}) => [styles.row, pressed && styles.rowPressed]}><View style={styles.details}><Text style={styles.name}>{item.partyName}</Text><Text style={styles.meta}>{item.status} · Started {formatShortDate(item.startedAt)}</Text></View><Text style={styles.value}>{formatCurrency(item.outstanding ?? item.principal)}</Text></Pressable>} /></SafeAreaView>;
+  const {colors} = useTheme();
+  const styles = createStyles(colors);
+  const {items, loading, error, refresh, reload} = useLoans();
+  const [direction, setDirection] = useState<LoanDirection>('given');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+  const [messageDialog, setMessageDialog] = useState<{title: string; message: string} | null>(null);
+  const hasFocused = useRef(false);
+  const visible = useMemo(() => items.filter(item => item.direction === direction), [direction, items]);
+  const activeItems = useMemo(() => visible.filter(item => item.status === 'active'), [visible]);
+  const totalPrincipal = useMemo(() => activeItems.reduce((sum, item) => sum + item.principal, 0), [activeItems]);
+
+  useFocusEffect(useCallback(() => {
+    if (hasFocused.current) {
+      reload();
+    }
+    hasFocused.current = true;
+  }, [reload]));
+
+  const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
+
+  const confirmDelete = (id: string) => setPendingDeleteId(id);
+  const deletePendingLoan = async () => {
+    if (!pendingDeleteId) return;
+    const id = pendingDeleteId;
+    setPendingDeleteId(null);
+    try {
+      await deleteLoan(id);
+      await reload();
+    } catch {
+      setMessageDialog({title: 'Could not delete loan', message: 'Please check your connection and try again.'});
+    }
+  };
+
+  const directionToggle = <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={[styles.toggleOption, direction === item && styles.selected]}><Text style={[styles.toggleText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View>;
+
+  return <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <AppHeader title="Loans" rightAction={{accessibilityLabel: 'Add loan', onPress: () => navigation.navigate('AddLoan'), icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
+    {loading ? <View style={styles.stateArea}>
+      <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
+      <Text style={[styles.emptyTitle, styles.loadingText]}>Loading loans…</Text>
+    </View> : error ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
+      {directionToggle}
+      <View style={styles.stateArea}>
+        <View style={styles.emptyIcon}><HandCoins size={25} color={colors.primary} strokeWidth={2.15} /></View>
+        <Text style={styles.emptyTitle}>Could not load loans</Text>
+        <Text style={styles.emptyCopy}>{error}</Text>
+      </View>
+    </ScrollView> : visible.length === 0 ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
+      {directionToggle}
+      <View style={styles.stateArea}>
+        <View style={styles.emptyIcon}><HandCoins size={25} color={colors.primary} strokeWidth={2.15} /></View>
+        <Text style={styles.emptyTitle}>No loans {direction === 'given' ? 'given' : 'taken'} yet</Text>
+        <Text style={styles.emptyCopy}>Add a loan to start tracking it.</Text>
+        <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddLoan')} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+          <Plus size={15} color={colors.white} strokeWidth={2.4} />
+          <Text style={styles.emptyActionText}>Add loan</Text>
+        </Pressable>
+      </View>
+    </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
+      {directionToggle}
+      <View style={styles.summaryCard}>
+        <View style={styles.summaryTop}>
+          <View style={styles.summaryCopy}>
+            <Text style={styles.summaryLabel}>{direction === 'given' ? 'Given principal' : 'Taken principal'}</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(totalPrincipal)}</Text>
+          </View>
+          <View style={styles.summaryIcon}><HandCoins size={25} color={colors.primary} strokeWidth={2.1} /></View>
+        </View>
+        <Text style={styles.summaryMeta}>{activeItems.length} active {activeItems.length === 1 ? 'loan' : 'loans'}</Text>
+      </View>
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>{direction === 'given' ? 'Loans given' : 'Loans taken'}</Text>
+        <Text style={styles.countBadge}>{visible.length} {visible.length === 1 ? 'item' : 'items'}</Text>
+      </View>
+      <View style={styles.loansCard}>
+        {visible.map((item, index) => <Pressable key={item.id} onPress={() => navigation.navigate('AddLoan', {loan: item})} onLongPress={() => confirmDelete(item.id)} delayLongPress={450} style={({pressed}) => [styles.row, index < visible.length - 1 && styles.rowDivider, pressed && styles.rowPressed]}>
+          <View style={styles.itemIcon}><HandCoins size={20} color={colors.primary} strokeWidth={2.15} /></View>
+          <View style={styles.details}>
+            <Text style={styles.name} numberOfLines={1}>{item.partyName}</Text>
+            <Text style={styles.meta} numberOfLines={1}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)} · Started {formatShortDate(item.startedAt)}</Text>
+          </View>
+          <View style={styles.amount}>
+            <Text style={styles.value}>{formatCurrency(item.principal)}</Text>
+            <Text style={styles.amountLabel}>Principal</Text>
+          </View>
+        </Pressable>)}
+      </View>
+    </ScrollView>}
+    <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this loan?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingLoan} />
+    <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
+  </SafeAreaView>;
 }
 
-const createStyles = (colors: Colors) => StyleSheet.create({safe: {flex: 1, backgroundColor: colors.canvas}, actions: {alignItems: 'flex-end', paddingHorizontal: spacing.lg, marginTop: -spacing.sm, marginBottom: spacing.sm}, add: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center'}, pressed: {opacity: 0.78}, toggle: {flexDirection: 'row', marginHorizontal: spacing.lg, padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md}, toggleOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm}, selected: {backgroundColor: colors.surface}, toggleText: {color: colors.inkMuted, fontWeight: '700', fontSize: 12}, selectedText: {color: colors.ink}, list: {padding: spacing.lg, paddingBottom: spacing.xl * 2}, summary: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.md, marginBottom: spacing.lg}, summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'}, summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs}, row: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm}, rowPressed: {backgroundColor: colors.surfaceMuted}, details: {flex: 1}, name: {color: colors.ink, fontSize: 15, fontWeight: '800'}, meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs}, value: {color: colors.ink, fontSize: 15, fontWeight: '800', marginLeft: spacing.sm}, empty: {alignItems: 'center', padding: spacing.xl, backgroundColor: colors.surface, borderRadius: radius.lg}, emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'}, emptyCopy: {color: colors.inkMuted, textAlign: 'center', marginTop: spacing.xs, lineHeight: 20}});
+const createStyles = (colors: Colors) => StyleSheet.create({
+  safeArea: {flex: 1, backgroundColor: colors.canvas},
+  contentScroll: {flex: 1},
+  content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
+  toggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
+  toggleOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
+  selected: {backgroundColor: colors.surface},
+  toggleText: {color: colors.inkMuted, fontWeight: '700', fontSize: 12},
+  selectedText: {color: colors.ink},
+  summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.lg},
+  summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  summaryCopy: {flex: 1, minWidth: 0},
+  summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
+  summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs},
+  summaryMeta: {color: colors.inkMuted, fontSize: 12, fontWeight: '600', marginTop: spacing.md},
+  summaryIcon: {height: 44, width: 44, borderRadius: radius.md, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm},
+  sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
+  sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
+  countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
+  loansCard: {backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
+  row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
+  rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
+  rowPressed: {backgroundColor: colors.surfaceMuted},
+  itemIcon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
+  details: {flex: 1, minWidth: 0},
+  name: {color: colors.ink, fontSize: 14, fontWeight: '700'},
+  meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
+  amount: {alignItems: 'flex-end', marginLeft: spacing.sm},
+  value: {color: colors.ink, fontSize: 14, fontWeight: '800'},
+  amountLabel: {color: colors.inkMuted, fontSize: 11, fontWeight: '600', marginTop: spacing.xs},
+  stateScroll: {flex: 1},
+  stateScrollContent: {flexGrow: 1, paddingHorizontal: spacing.lg},
+  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginTop: spacing.lg, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
+  loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
+  emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.pill, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center'},
+  emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
+  loadingText: {marginTop: spacing.sm},
+  emptyCopy: {color: colors.inkMuted, fontSize: 13, lineHeight: 20, maxWidth: 260, textAlign: 'center', marginTop: spacing.xs},
+  emptyAction: {height: controlHeight.xs, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.primary, marginTop: spacing.lg},
+  emptyActionText: {color: colors.white, fontSize: 12, fontWeight: '800'},
+  actionPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
+});

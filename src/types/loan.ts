@@ -7,7 +7,6 @@ export interface Loan {
   direction: LoanDirection;
   partyName: string;
   principal: number;
-  outstanding?: number;
   interestRate?: number;
   startedAt: Date;
   dueAt?: Date;
@@ -18,6 +17,3 @@ export interface Loan {
 }
 
 export type LoanInput = Omit<Loan, 'id' | 'uid' | 'createdAt' | 'updatedAt'>;
-
-export type LoanMovementKind = 'disbursement' | 'repayment' | 'interest';
-export interface LoanMovement {id: string; uid: string; loanId: string; kind: LoanMovementKind; amount: number; date: Date; note?: string; createdAt?: Date}
