@@ -11,9 +11,9 @@ export default function MonthSwitcher({month, onPrevious, onNext, nextDisabled =
 
   return (
     <View style={styles.container}>
-      <Pressable accessibilityLabel="Previous month" onPress={onPrevious} style={({pressed}) => [styles.button, pressed && styles.pressed]}><ChevronLeft size={21} color={colors.primary} strokeWidth={2.25} /></Pressable>
+      <Pressable accessibilityLabel="Previous month" onPress={onPrevious} style={({pressed}) => [styles.button, pressed && styles.pressed]}><ChevronLeft size={21} color={colors.ink} strokeWidth={2.25} /></Pressable>
       <Text style={styles.month}>{formatMonth(month)}</Text>
-      <Pressable accessibilityLabel="Next month" accessibilityState={{disabled: nextDisabled}} disabled={nextDisabled} onPress={onNext} style={({pressed}) => [styles.button, pressed && styles.pressed, nextDisabled && styles.disabled]}><ChevronRight size={21} color={colors.primary} strokeWidth={2.25} /></Pressable>
+      <Pressable accessibilityLabel="Next month" accessibilityState={{disabled: nextDisabled}} disabled={nextDisabled} onPress={onNext} style={({pressed}) => [styles.button, pressed && styles.pressed, nextDisabled && styles.disabled]}><ChevronRight size={21} color={colors.ink} strokeWidth={2.25} /></Pressable>
     </View>
   );
 }

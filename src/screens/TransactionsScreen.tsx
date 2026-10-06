@@ -46,7 +46,7 @@ export default function TransactionsScreen({navigation}: Props) {
   }, [allTransactions]);
   const now = new Date();
   const isLatestMonth = month.getFullYear() === now.getFullYear() && month.getMonth() === now.getMonth();
-  const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} />;
+  const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
 
   const confirmDelete = (id: string) => setPendingDeleteId(id);
   const deletePendingTransaction = async () => {
@@ -111,7 +111,7 @@ function Balance({label, amount, icon: Icon}: {label: string; amount: number; ic
   const {colors} = useTheme();
   const styles = createStyles(colors);
 
-  return <View style={styles.balance}><View style={styles.balanceIcon}><Icon size={15} color={colors.primary} strokeWidth={2.25} /></View><Text style={styles.balanceLabel}>{label}</Text><Text style={[styles.balanceAmount, amount < 0 && styles.negative]}>{formatCurrency(amount)}</Text></View>;
+  return <View style={styles.balance}><View style={styles.balanceContent}><View style={styles.balanceCopy}><Text style={styles.balanceLabel}>{label}</Text><Text style={[styles.balanceAmount, amount < 0 && styles.negative]}>{formatCurrency(amount)}</Text></View><View style={styles.balanceIcon}><Icon size={24} color={colors.primary} strokeWidth={2.25} /></View></View></View>;
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
@@ -129,8 +129,10 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   balanceRow: {flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm},
   balance: {flex: 1, backgroundColor: colors.surface, borderRadius: radius.md, padding: spacing.md},
-  balanceIcon: {height: 24, width: 24, borderRadius: radius.sm, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
-  balanceLabel: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.sm},
+  balanceContent: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  balanceCopy: {flex: 1, minWidth: 0},
+  balanceIcon: {height: 44, width: 44, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm},
+  balanceLabel: {color: colors.inkMuted, fontSize: 12},
   balanceAmount: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xs},
   negative: {color: colors.expense},
   totalBalance: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md},
