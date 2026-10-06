@@ -23,7 +23,7 @@ const GoldStack = createNativeStackNavigator<GoldStackParamList>();
 const FDStack = createNativeStackNavigator<FDStackParamList>();
 const LoansStack = createNativeStackNavigator<LoansStackParamList>();
 type TabIconProps = {color: string; focused: boolean};
-const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => { const {colors} = useTheme(); return <View style={[styles.tabIcon, focused && {backgroundColor: colors.selectionSoft}]}>{children}</View>; };
+const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => { const {colors} = useTheme(); return <View style={[styles.tabIcon, focused && {backgroundColor: colors.primarySoft}]}>{children}</View>; };
 const TransactionsTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><ArrowDownUp color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const GoldTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><Gem color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const FDTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><BadgeIndianRupee color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
