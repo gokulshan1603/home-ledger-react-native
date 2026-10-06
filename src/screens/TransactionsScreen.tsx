@@ -41,7 +41,7 @@ export default function TransactionsScreen({navigation}: Props) {
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <AppHeader title="Transactions" />
+      <AppHeader title="Transactions" rightAction={{accessibilityLabel: 'Add entry', onPress: () => navigation.navigate('AddEntry'), icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
       <View style={styles.overview}>
         <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
         <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
@@ -69,7 +69,7 @@ export default function TransactionsScreen({navigation}: Props) {
           ListEmptyComponent={!loading && !error ? <View style={styles.emptyState}>
             <Text style={styles.emptyTitle}>Nothing logged yet</Text>
             <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
-            <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.emptyAction, pressed && styles.fabPressed]}>
+            <Pressable accessibilityRole="button" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
               <Plus size={15} color={colors.white} strokeWidth={2.4} />
               <Text style={styles.emptyActionText}>Add entry</Text>
             </Pressable>
@@ -77,7 +77,6 @@ export default function TransactionsScreen({navigation}: Props) {
           ListFooterComponent={transactions.length > 0 ? <View style={styles.footer} /> : null}
         />
       </View>
-      <Pressable accessibilityLabel="Add entry" onPress={() => navigation.navigate('AddEntry')} style={({pressed}) => [styles.fab, pressed && styles.fabPressed]}><Plus size={28} color={colors.white} strokeWidth={2.25} /></Pressable>
     </SafeAreaView>
   );
 }
@@ -118,6 +117,5 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   emptyAction: {height: controlHeight.xs, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.primary, marginTop: spacing.lg},
   emptyActionText: {color: colors.white, fontSize: 12, fontWeight: '800'},
   footer: {height: spacing.xl * 3},
-  fab: {position: 'absolute', right: spacing.lg, bottom: spacing.lg, height: controlHeight.lg, width: controlHeight.lg, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', shadowColor: colors.primary, shadowOpacity: 0.25, shadowRadius: 8, elevation: 5},
-  fabPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
+  actionPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
 });

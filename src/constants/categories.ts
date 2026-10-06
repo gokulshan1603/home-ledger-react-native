@@ -9,9 +9,10 @@ export const CATEGORIES: Record<TransactionType, string[]> = {
     'Dining',
     'Health',
     'Education',
+    'Interest',
     'Shopping',
     'Entertainment',
     'Other',
   ],
-  income: ['Salary', 'Rent received', 'Business', 'Gift', 'Other'],
+  income: ['Salary', 'Rent received', 'Business', 'Interest', 'Gift', 'Other'],
 };
