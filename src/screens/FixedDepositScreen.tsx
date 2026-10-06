@@ -25,6 +25,10 @@ export default function FixedDepositScreen({navigation}: Props) {
   const refreshOnFocus = useRef(false);
   const activeItems = useMemo(() => items.filter(item => item.status === 'active'), [items]);
   const totalPrincipal = useMemo(() => activeItems.reduce((sum, item) => sum + item.principal, 0), [activeItems]);
+  const annualInterest = useMemo(() => activeItems.reduce((sum, item) => sum + (item.principal * (item.interestRate ?? 0)) / 100, 0), [activeItems]);
+  const monthlyInterest = annualInterest / 12;
+  const quarterlyInterest = annualInterest / 4;
+  const maturityAmount = useMemo(() => activeItems.reduce((sum, item) => sum + item.maturityAmount, 0), [activeItems]);
 
   useFocusEffect(useCallback(() => {
     if (refreshOnFocus.current) {
@@ -81,12 +85,27 @@ export default function FixedDepositScreen({navigation}: Props) {
       </View>
     </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
       <View style={styles.summaryCard}>
-        <View style={styles.summaryTop}>
-          <View style={styles.summaryCopy}>
+        <View style={styles.summaryGrid}>
+          <View style={styles.summaryMetric}>
             <Text style={styles.summaryLabel}>Active principal</Text>
             <Text style={styles.summaryValue}>{formatCurrency(totalPrincipal)}</Text>
           </View>
-          <View style={styles.summaryIcon}><BadgeIndianRupee size={25} color={colors.primary} strokeWidth={2.1} /></View>
+          <View style={styles.summaryMetric}>
+            <Text style={styles.summaryLabel}>Monthly interest</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(monthlyInterest)}</Text>
+          </View>
+          <View style={styles.summaryMetric}>
+            <Text style={styles.summaryLabel}>Quarterly interest</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(quarterlyInterest)}</Text>
+          </View>
+          <View style={styles.summaryMetric}>
+            <Text style={styles.summaryLabel}>Annual interest</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(annualInterest)}</Text>
+          </View>
+          <View style={styles.summaryMetric}>
+            <Text style={styles.summaryLabel}>Maturity amount</Text>
+            <Text style={styles.summaryValue}>{formatCurrency(maturityAmount)}</Text>
+          </View>
         </View>
         <Text style={styles.summaryMeta}>{activeItems.length} active {activeItems.length === 1 ? 'deposit' : 'deposits'}</Text>
       </View>
@@ -118,12 +137,11 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   contentScroll: {flex: 1},
   content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
   summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  summaryCopy: {flex: 1, minWidth: 0},
+  summaryGrid: {flexDirection: 'row', flexWrap: 'wrap', marginHorizontal: -spacing.sm, marginVertical: -spacing.xs},
+  summaryMetric: {width: '50%', paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
   summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
-  summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs},
+  summaryValue: {color: colors.ink, fontSize: 18, fontWeight: '800', marginTop: spacing.xs},
   summaryMeta: {color: colors.inkMuted, fontSize: 12, fontWeight: '600', marginTop: spacing.md},
-  summaryIcon: {height: 44, width: 44, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.sm},
   sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
