@@ -109,7 +109,7 @@ export default function AddEntryScreen({navigation, route}: Props) {
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
-  content: {paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.xl * 3},
+  content: {paddingHorizontal: spacing.lg, paddingTop: 0, paddingBottom: spacing.xl * 3},
   typeToggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.md},
   typeOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
   expenseSelected: {backgroundColor: colors.expense},

@@ -81,7 +81,7 @@ export default function AddGoldScreen({navigation, route}: Props) {
 
   return <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-      <Text style={styles.label}>Name</Text>
+      <Text style={[styles.label, styles.firstLabel]}>Name</Text>
       <TextInput value={name} onChangeText={setName} placeholder="Gold coins" placeholderTextColor={colors.inkMuted} style={styles.input} />
       <Text style={styles.label}>Weight (g)</Text>
       <TextInput value={weight} onChangeText={text => setWeight(text.replace(/[^0-9.]/g, ''))} keyboardType="decimal-pad" placeholder="0" placeholderTextColor={colors.inkMuted} style={styles.input} />
@@ -100,7 +100,8 @@ export default function AddGoldScreen({navigation, route}: Props) {
 
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
-  content: {paddingHorizontal: spacing.lg, paddingTop: spacing.lg, paddingBottom: spacing.xl * 3},
+  content: {paddingHorizontal: spacing.lg, paddingTop: 0, paddingBottom: spacing.xl * 3},
+  firstLabel: {marginTop: 0},
   label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.lg, marginBottom: spacing.sm},
   optional: {color: colors.inkMuted, fontWeight: '500'},
   input: {height: controlHeight.md, backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md},

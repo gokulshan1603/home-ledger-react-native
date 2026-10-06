@@ -121,7 +121,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   listContent: {paddingHorizontal: 0},
   stateScroll: {flex: 1},
   stateScrollContent: {flexGrow: 1},
-  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginVertical: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
+  stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: 0, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
   loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
   emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.pill, backgroundColor: colors.selectionSoft, alignItems: 'center', justifyContent: 'center'},
   summarySpacing: {marginTop: spacing.md},
