@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Eye, EyeOff, LogIn} from 'lucide-react-native';
+import {ArrowRight, Eye, EyeOff} from 'lucide-react-native';
 import {login} from '../services/authService';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
@@ -34,23 +34,22 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <View style={styles.brandMark}><PaisaMark colors={colors} size={controlHeight.md} /></View>
-        <Text style={styles.kicker}>PAISA</Text>
+        <View style={styles.brandMark}><PaisaMark colors={colors} size={64} /></View>
         <Text style={styles.title}>Every rupee, clearly.</Text>
         <Text style={styles.subtitle}>See your cash, savings, gold, deposits, and loans in one calm place.</Text>
         <View style={styles.form}>
           <Text style={styles.label}>Email</Text>
-          <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" placeholder="you@example.com" placeholderTextColor={colors.inkMuted} style={styles.input} />
+          <TextInput value={email} onChangeText={setEmail} autoCapitalize="none" autoCorrect={false} keyboardType="email-address" placeholder="Enter your email" placeholderTextColor={colors.inkMuted} style={styles.input} />
           <Text style={styles.label}>Password</Text>
           <View style={styles.passwordField}>
-            <TextInput value={password} onChangeText={setPassword} secureTextEntry={!showPassword} placeholder="Your password" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.passwordInput]} />
+            <TextInput value={password} onChangeText={setPassword} secureTextEntry={!showPassword} placeholder="Enter your password" placeholderTextColor={colors.inkMuted} style={[styles.input, styles.passwordInput]} />
             <Pressable accessibilityRole="button" accessibilityLabel={showPassword ? 'Hide password' : 'Show password'} onPress={() => setShowPassword(current => !current)} style={({pressed}) => [styles.passwordToggle, pressed && styles.passwordTogglePressed]} hitSlop={6}>
               {showPassword ? <EyeOff size={18} color={colors.inkMuted} strokeWidth={2.2} /> : <Eye size={18} color={colors.inkMuted} strokeWidth={2.2} />}
             </Pressable>
           </View>
           {error ? <Text style={styles.error}>{error}</Text> : null}
           <Pressable onPress={submit} disabled={submitting} style={({pressed}) => [styles.button, pressed && styles.buttonPressed, submitting && styles.disabled]}>
-            {submitting ? <ActivityIndicator color={colors.white} /> : <><Text style={styles.buttonText}>Log in</Text><LogIn size={17} color={colors.white} strokeWidth={2.25} /></>}
+            {submitting ? <ActivityIndicator color={colors.white} /> : <><Text style={styles.buttonText}>Log in</Text><ArrowRight size={17} color={colors.white} strokeWidth={2.25} /></>}
           </Pressable>
         </View>
       </ScrollView>
@@ -61,8 +60,7 @@ export default function LoginScreen() {
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {flexGrow: 1, justifyContent: 'center', padding: spacing.lg},
-  brandMark: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md},
-  kicker: {color: colors.primary, fontSize: 11, fontWeight: '800', letterSpacing: 1.6},
+  brandMark: {height: 64, width: 64, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md},
   title: {color: colors.ink, fontSize: 28, lineHeight: 34, fontWeight: '800', marginTop: spacing.sm, maxWidth: 300},
   subtitle: {color: colors.inkMuted, fontSize: 14, lineHeight: 20, marginTop: spacing.sm, maxWidth: 300},
   form: {marginTop: spacing.xl},

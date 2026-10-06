@@ -6,6 +6,7 @@ jest.mock('lucide-react-native', () => {
   const Icon = () => null;
   return {
     ArrowDown: Icon,
+    ArrowRight: Icon,
     ArrowUp: Icon,
     CalendarDays: Icon,
     ChevronLeft: Icon,
