@@ -1,6 +1,6 @@
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
-import {Check, Trash2} from 'lucide-react-native';
+import {ArrowDownLeft, ArrowUpRight, Check, Trash2} from 'lucide-react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoansStackParamList} from '../navigation/types';
 import {addLoan, deleteLoan, updateLoan} from '../services/loanService';
@@ -83,7 +83,7 @@ export default function AddLoanScreen({navigation, route}: Props) {
   return <KeyboardAvoidingView style={styles.flex} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
     <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
       <Text style={[styles.label, styles.firstLabel]}>Loan direction</Text>
-      <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={[styles.option, direction === item && styles.selected]}><Text style={[styles.optionText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loan given' : 'Loan taken'}</Text></Pressable>)}</View>
+      <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={({pressed}) => [styles.option, direction === item && styles.selected, pressed && styles.togglePressed]}>{item === 'given' ? <ArrowUpRight size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} /> : <ArrowDownLeft size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} />}<Text style={[styles.optionText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View>
       <Text style={styles.label}>Party name</Text>
       <TextInput value={partyName} onChangeText={setPartyName} placeholder="Person or organization" placeholderTextColor={colors.inkMuted} style={styles.input} />
       <Text style={styles.label}>Principal</Text>
@@ -112,10 +112,11 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   label: {color: colors.ink, fontSize: 12, fontWeight: '800', marginTop: spacing.lg, marginBottom: spacing.sm},
   optional: {color: colors.inkMuted, fontWeight: '500'},
   toggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.md},
-  option: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
-  selected: {backgroundColor: colors.surfaceMuted},
-  optionText: {color: colors.inkMuted, fontWeight: '700', fontSize: 12},
-  selectedText: {color: colors.ink},
+  option: {flex: 1, minHeight: controlHeight.sm, borderRadius: radius.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm},
+  selected: {backgroundColor: colors.primary},
+  togglePressed: {opacity: 0.78},
+  optionText: {color: colors.inkMuted, fontSize: 14, fontWeight: '600'},
+  selectedText: {color: colors.white},
   input: {height: controlHeight.md, backgroundColor: colors.surface, borderRadius: radius.md, color: colors.ink, fontSize: 14, paddingHorizontal: spacing.md},
   note: {height: 80, paddingVertical: spacing.sm, textAlignVertical: 'top'},
   saveButton: {height: controlHeight.md, borderRadius: radius.md, backgroundColor: colors.primary, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs, marginTop: spacing.xl},

@@ -130,7 +130,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   selected: {backgroundColor: colors.primary},
   togglePressed: {opacity: 0.78},
   toggleText: {color: colors.inkMuted, fontSize: 14, fontWeight: '600'},
-  selectedText: {color: colors.ink},
+  selectedText: {color: colors.white},
   summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.lg},
   summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
   summaryCopy: {flex: 1, minWidth: 0},
