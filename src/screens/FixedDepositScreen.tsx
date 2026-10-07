@@ -8,7 +8,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {FDStackParamList} from '../navigation/types';
 import {useFixedDeposits} from '../hooks/useFixedDeposits';
 import {deleteFixedDeposit} from '../services/fdService';
-import {formatCurrency, formatShortDate} from '../utils/format';
+import {formatCurrency, formatDate} from '../utils/format';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import AppHeader from '../components/AppHeader';
@@ -115,7 +115,8 @@ export default function FixedDepositScreen({navigation}: Props) {
           <View style={styles.itemIcon}><BadgeIndianRupee size={20} color={colors.primary} strokeWidth={2.15} /></View>
           <View style={styles.details}>
             <Text style={styles.name} numberOfLines={1}>{item.name}</Text>
-            <Text style={styles.meta} numberOfLines={1}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)} · {item.interestFrequency === 'on_maturity' ? 'On maturity' : item.interestFrequency.charAt(0).toUpperCase() + item.interestFrequency.slice(1)}{item.interestRate ? ` · ${item.interestRate}%` : ''} · Matures {formatShortDate(item.maturityAt)}</Text>
+            <Text style={styles.meta} numberOfLines={1}>{item.status.charAt(0).toUpperCase() + item.status.slice(1)} · {item.interestFrequency === 'on_maturity' ? 'On maturity' : item.interestFrequency.charAt(0).toUpperCase() + item.interestFrequency.slice(1)}{item.interestRate ? ` · ${item.interestRate}%` : ''}</Text>
+            <Text style={styles.meta} numberOfLines={1}>Starts {formatDate(item.startedAt)} · Matures {formatDate(item.maturityAt)}</Text>
           </View>
           <View style={styles.amount}>
             <Text style={styles.value}>{formatCurrency(item.maturityAmount)}</Text>
@@ -152,7 +153,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   statAmount: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xs},
   sectionHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, marginBottom: spacing.sm},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
-  countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
+  countBadge: {color: colors.inkMuted, fontSize: 12, backgroundColor: colors.surface, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
   depositsCard: {backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
   row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
   rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
@@ -163,7 +164,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
   amount: {alignItems: 'flex-end', marginLeft: spacing.sm},
   value: {color: colors.ink, fontSize: 14, fontWeight: '800'},
-  amountLabel: {color: colors.inkMuted, fontSize: 11, fontWeight: '600', marginTop: spacing.xs},
+  amountLabel: {color: colors.inkMuted, fontSize: 12,  marginTop: spacing.xs},
   stateScroll: {flex: 1},
   stateScrollContent: {flexGrow: 1},
   stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: 0, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
