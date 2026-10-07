@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, View} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator, NativeStackHeaderProps} from '@react-navigation/native-stack';
 import {ArrowDownUp, BadgeIndianRupee, Gem, HandCoins, UserRound} from 'lucide-react-native';
@@ -25,6 +25,8 @@ const LoansStack = createNativeStackNavigator<LoansStackParamList>();
 type TabIconProps = {focused: boolean};
 const useTabTint = (focused: boolean) => { const {colors} = useTheme(); return focused ? colors.primary : colors.inkMuted; };
 const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => { const {colors} = useTheme(); return <View style={[styles.tabIcon, focused && {backgroundColor: colors.primarySoft}]}>{children}</View>; };
+const TabLabel = ({focused, children}: {focused: boolean; children: string}) => <Text style={[styles.tabLabel, {color: useTabTint(focused)}]}>{children}</Text>;
+const renderTabLabel = ({focused, children}: {focused: boolean; children: string}) => <TabLabel focused={focused}>{children}</TabLabel>;
 const TransactionsTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><ArrowDownUp color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const GoldTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><Gem color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 const FDTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><BadgeIndianRupee color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
@@ -41,8 +43,8 @@ function LoansNavigator() { const {colors} = useTheme(); return <LoansStack.Navi
 export default function AppTabs() {
   const {colors} = useTheme();
   const insets = useSafeAreaInsets();
-  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64 + insets.bottom, paddingBottom: insets.bottom + 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabelStyle: styles.tabLabel}}>
-    <Tabs.Screen name="Transactions" component={TransactionsNavigator} options={{tabBarIcon: TransactionsTabIcon, tabBarLabel: 'Transactions'}} />
+  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64 + insets.bottom, paddingBottom: insets.bottom + 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabel: renderTabLabel}}>
+    <Tabs.Screen name="Transactions" component={TransactionsNavigator} options={{tabBarIcon: TransactionsTabIcon}} />
     <Tabs.Screen name="Gold" component={GoldNavigator} options={{tabBarIcon: GoldTabIcon}} />
     <Tabs.Screen name="FD" component={FDNavigator} options={{tabBarIcon: FDTabIcon}} />
     <Tabs.Screen name="Loans" component={LoansNavigator} options={{tabBarIcon: LoansTabIcon}} />
@@ -55,5 +57,5 @@ const styles = StyleSheet.create({
   tabItem: {paddingVertical: 1},
   tabIconSlot: {height: 26, marginBottom: 1},
   tabIcon: {height: 26, width: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13},
-  tabLabel: {fontSize: 11, lineHeight: 14, marginTop: 1, includeFontPadding: false},
+  tabLabel: {fontSize: 12, lineHeight: 15, marginTop: 1, includeFontPadding: false},
 });
