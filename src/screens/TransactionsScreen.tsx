@@ -146,7 +146,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   transactionsCard: {flex: 1, marginHorizontal: spacing.lg, marginVertical: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
   transactionsList: {flex: 1},
   emptyList: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg},
-  countBadge: {color: colors.inkMuted, fontSize: 11, fontWeight: '700', backgroundColor: colors.surfaceMuted, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
+  countBadge: {color: colors.inkMuted, fontSize: 12, backgroundColor: colors.surface, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs},
   emptyTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   loadingText: {marginTop: spacing.sm},
   emptyCopy: {color: colors.inkMuted, fontSize: 13, lineHeight: 20, maxWidth: 260, textAlign: 'center', marginTop: spacing.xs},
