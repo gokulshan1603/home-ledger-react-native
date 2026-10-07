@@ -15,6 +15,7 @@ export default function SummaryCard({income, expense, net}: {income: number; exp
         <Defs>
           <LinearGradient id="monthlyOverviewGradient" x1="0%" y1="0%" x2="100%" y2="100%">
             <Stop offset="0%" stopColor={colors.primary} />
+            <Stop offset="50%" stopColor={colors.primary} />
             <Stop offset="100%" stopColor={colors.primaryDark} />
           </LinearGradient>
         </Defs>
