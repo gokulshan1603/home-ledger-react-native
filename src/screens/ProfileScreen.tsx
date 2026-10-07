@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Modal, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
-import {LogOut, Moon, Sun, UserRound} from 'lucide-react-native';
+import {LogOut, Monitor, Moon, Sun, UserRound} from 'lucide-react-native';
 import {useAuth} from '../context/AuthContext';
 import {ThemeMode, useTheme} from '../context/ThemeContext';
 import {logout} from '../services/authService';
@@ -13,7 +13,7 @@ export default function ProfileScreen() {
   const {colors, mode, setMode} = useTheme();
   const styles = createStyles(colors);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-  const displayName = user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? 'Paisa user';
+  const displayName = user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? 'User';
   const chooseMode = (nextMode: ThemeMode) => setMode(nextMode);
   const confirmLogout = () => setShowLogoutDialog(true);
   const finishLogout = () => {
@@ -38,7 +38,7 @@ export default function ProfileScreen() {
             {(['system', 'light', 'dark'] as ThemeMode[]).map(item => (
               <Pressable key={item} accessibilityRole="button" accessibilityState={{selected: mode === item}} onPress={() => chooseMode(item)} style={({pressed}) => [styles.themeOption, mode === item && styles.themeSelected, pressed && styles.optionPressed]}>
                 <Text style={[styles.themeText, mode === item && styles.themeSelectedText]}>{item === 'system' ? 'System' : item === 'light' ? 'Light' : 'Dark'}</Text>
-                {item === 'system' ? <UserRound size={16} color={mode === item ? colors.white : colors.inkMuted} /> : item === 'light' ? <Sun size={16} color={mode === item ? colors.white : colors.inkMuted} /> : <Moon size={16} color={mode === item ? colors.white : colors.inkMuted} />}
+                {item === 'system' ? <Monitor size={16} color={mode === item ? colors.white : colors.inkMuted} /> : item === 'light' ? <Sun size={16} color={mode === item ? colors.white : colors.inkMuted} /> : <Moon size={16} color={mode === item ? colors.white : colors.inkMuted} />}
               </Pressable>
             ))}
           </View>

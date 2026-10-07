@@ -1,7 +1,7 @@
 import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
-import {HandCoins, Plus} from 'lucide-react-native';
+import {ArrowDownLeft, ArrowUpRight, HandCoins, Plus} from 'lucide-react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoansStackParamList} from '../navigation/types';
@@ -61,7 +61,7 @@ export default function LoansScreen({navigation}: Props) {
     if (loan) navigation.navigate('AddLoan', {loan});
   };
 
-  const directionToggle = <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={[styles.toggleOption, direction === item && styles.selected]}><Text style={[styles.toggleText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View>;
+  const directionToggle = <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={({pressed}) => [styles.toggleOption, direction === item && styles.selected, pressed && styles.togglePressed]}>{item === 'given' ? <ArrowUpRight size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} /> : <ArrowDownLeft size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} />}<Text style={[styles.toggleText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View>;
 
   return <SafeAreaView style={styles.safeArea} edges={['top']}>
     <AppHeader title="Loans" rightAction={{accessibilityLabel: 'Add loan', onPress: openAddLoan, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
@@ -125,10 +125,11 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   safeArea: {flex: 1, backgroundColor: colors.canvas},
   contentScroll: {flex: 1},
   content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
-  toggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surfaceMuted, borderRadius: radius.md},
-  toggleOption: {flex: 1, minHeight: controlHeight.sm, alignItems: 'center', justifyContent: 'center', borderRadius: radius.sm},
-  selected: {backgroundColor: colors.surface},
-  toggleText: {color: colors.inkMuted, fontWeight: '700', fontSize: 12},
+  toggle: {flexDirection: 'row', padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.md},
+  toggleOption: {flex: 1, minHeight: controlHeight.sm, borderRadius: radius.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.sm},
+  selected: {backgroundColor: colors.primary},
+  togglePressed: {opacity: 0.78},
+  toggleText: {color: colors.inkMuted, fontSize: 14, fontWeight: '600'},
   selectedText: {color: colors.ink},
   summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg, marginTop: spacing.lg},
   summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
