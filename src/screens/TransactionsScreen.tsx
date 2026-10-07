@@ -140,7 +140,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   balanceAmount: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xs},
   negative: {color: colors.expense},
   totalBalance: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: spacing.sm, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md},
-  totalLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '600'},
+  totalLabel: {color: colors.inkMuted, fontSize: 14, },
   totalAmount: {color: colors.ink, fontSize: 18, fontWeight: '800'},
   transactionsSection: {marginTop: spacing.lg, marginHorizontal: spacing.lg},
   transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},

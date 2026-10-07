@@ -29,7 +29,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
   rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
   pressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.99}]},
-  icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
+  icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
   incomeIcon: {backgroundColor: colors.incomeSoft},
   expenseIcon: {backgroundColor: colors.expenseSoft},
   details: {flex: 1, minWidth: 0},
@@ -37,7 +37,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   meta: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
   amounts: {alignItems: 'flex-end', marginLeft: spacing.sm},
   amount: {fontSize: 14, fontWeight: '800'},
-  balance: {color: colors.inkMuted, fontSize: 11, fontWeight: '600', marginTop: spacing.xs},
+  balance: {color: colors.inkMuted, fontSize: 12,  marginTop: spacing.xs},
   incomeText: {color: colors.income},
   expenseText: {color: colors.expense},
 });
