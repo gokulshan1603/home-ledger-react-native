@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {Modal, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Modal, NativeModules, Platform, Pressable, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {LogOut, Monitor, Moon, Sun, UserRound} from 'lucide-react-native';
 import {useAuth} from '../context/AuthContext';
 import {ThemeMode, useTheme} from '../context/ThemeContext';
@@ -13,7 +13,12 @@ export default function ProfileScreen() {
   const {colors, mode, setMode} = useTheme();
   const styles = createStyles(colors);
   const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+  const [appVersion, setAppVersion] = useState('—');
   const displayName = user?.user_metadata?.display_name ?? user?.user_metadata?.full_name ?? 'User';
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !NativeModules.AppVersion?.getVersion) return;
+    NativeModules.AppVersion.getVersion().then((version: string) => setAppVersion(version)).catch(() => undefined);
+  }, []);
   const chooseMode = (nextMode: ThemeMode) => setMode(nextMode);
   const confirmLogout = () => setShowLogoutDialog(true);
   const finishLogout = () => {
@@ -42,6 +47,11 @@ export default function ProfileScreen() {
               </Pressable>
             ))}
           </View>
+        </View>
+
+        <View style={styles.versionRow}>
+          <Text style={styles.versionLabel}>App version</Text>
+          <Text style={styles.versionValue}>{appVersion}</Text>
         </View>
 
         <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={confirmLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]}>
@@ -85,6 +95,9 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   themeText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
   themeSelectedText: {color: colors.white},
   optionPressed: {opacity: 0.8},
+  versionRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md},
+  versionLabel: {color: colors.inkMuted, fontSize: 13},
+  versionValue: {color: colors.ink, fontSize: 13, fontWeight: '700'},
   logout: {minHeight: controlHeight.md, marginTop: spacing.xl, paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   logoutText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   pressed: {opacity: 0.75},

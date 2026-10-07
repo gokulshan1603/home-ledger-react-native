@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, KeyboardAvoidingView, NativeModules, Platform, Pressable, ScrollView, StyleSheet, Text, TextInput, View} from 'react-native';
 import {ArrowRight, Eye, EyeOff} from 'lucide-react-native';
 import {login} from '../services/authService';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
@@ -14,6 +14,12 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [appVersion, setAppVersion] = useState('—');
+
+  useEffect(() => {
+    if (Platform.OS !== 'android' || !NativeModules.AppVersion?.getVersion) return;
+    NativeModules.AppVersion.getVersion().then((version: string) => setAppVersion(version)).catch(() => undefined);
+  }, []);
 
   const submit = async () => {
     if (!email.trim() || !password) {
@@ -51,6 +57,7 @@ export default function LoginScreen() {
           <Pressable onPress={submit} disabled={submitting} style={({pressed}) => [styles.button, pressed && styles.buttonPressed, submitting && styles.disabled]}>
             {submitting ? <ActivityIndicator color={colors.white} /> : <><Text style={styles.buttonText}>Log in</Text><ArrowRight size={17} color={colors.white} strokeWidth={2.25} /></>}
           </Pressable>
+          <Text style={styles.version}>Version {appVersion}</Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -75,4 +82,5 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   buttonPressed: {backgroundColor: colors.primaryDark},
   disabled: {opacity: 0.7},
   buttonText: {color: colors.white, fontSize: 14, fontWeight: '800'},
+  version: {color: colors.inkMuted, fontSize: 12, textAlign: 'center', marginTop: spacing.md},
 });
