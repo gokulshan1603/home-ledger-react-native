@@ -14,6 +14,7 @@ import LoansScreen from '../screens/LoansScreen';
 import AddLoanScreen from '../screens/AddLoanScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import {useTheme} from '../context/ThemeContext';
+import {radius} from '../constants/theme';
 import {FDStackParamList, GoldStackParamList, LoansStackParamList, TransactionsStackParamList} from './types';
 import AppHeader from '../components/AppHeader';
 
@@ -56,6 +57,6 @@ const styles = StyleSheet.create({
   headerTitle: {fontWeight: '800', fontSize: 16},
   tabItem: {paddingVertical: 1},
   tabIconSlot: {height: 26, marginBottom: 1},
-  tabIcon: {height: 26, width: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13},
+  tabIcon: {height: 26, width: 44, alignItems: 'center', justifyContent: 'center', borderRadius: radius.md},
   tabLabel: {fontSize: 12, lineHeight: 15, marginTop: 1, includeFontPadding: false},
 });

@@ -23,7 +23,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   leftContent: {flex: 1, minWidth: 0},
   backRow: {flexDirection: 'row', alignItems: 'center', gap: spacing.sm},
   back: {height: controlHeight.sm, width: controlHeight.sm, alignItems: 'center', justifyContent: 'center'},
-  action: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.md},
+  action: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.md, backgroundColor: colors.primary, alignItems: 'center', justifyContent: 'center', marginLeft: spacing.md},
   actionDanger: {backgroundColor: colors.expense},
   actionPlain: {backgroundColor: 'transparent'},
   pressed: {opacity: 0.78},

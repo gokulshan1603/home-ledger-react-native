@@ -110,7 +110,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   doneButton: {minHeight: controlHeight.xs, justifyContent: 'center', paddingHorizontal: spacing.sm},
   done: {color: colors.primary, fontSize: 14, fontWeight: '800'},
   monthHeader: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.xl},
-  monthButton: {height: controlHeight.xs, width: controlHeight.xs, borderRadius: radius.pill, backgroundColor: colors.surfaceMuted, alignItems: 'center', justifyContent: 'center'},
+  monthButton: {height: controlHeight.xs, width: controlHeight.xs, borderRadius: radius.md, backgroundColor: colors.surfaceMuted, alignItems: 'center', justifyContent: 'center'},
   monthTitleButton: {flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, borderRadius: radius.sm},
   monthTitle: {color: colors.ink, fontSize: 15, fontWeight: '800'},
   monthPicker: {marginTop: spacing.lg},

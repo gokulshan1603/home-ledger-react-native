@@ -29,7 +29,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   row: {flexDirection: 'row', alignItems: 'center', padding: spacing.md},
   rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
   pressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.99}]},
-  icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
+  icon: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', marginRight: spacing.sm},
   incomeIcon: {backgroundColor: colors.incomeSoft},
   expenseIcon: {backgroundColor: colors.expenseSoft},
   details: {flex: 1, minWidth: 0},

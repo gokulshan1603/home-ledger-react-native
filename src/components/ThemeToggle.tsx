@@ -21,6 +21,6 @@ export default function ThemeToggle() {
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({
-  button: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface},
+  button: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.surface},
   pressed: {backgroundColor: colors.surfaceMuted, transform: [{scale: 0.96}]},
 });

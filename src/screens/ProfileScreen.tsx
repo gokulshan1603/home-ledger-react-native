@@ -45,7 +45,7 @@ export default function ProfileScreen() {
         </View>
 
         <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={confirmLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]}>
-          <LogOut size={18} color={colors.expense} strokeWidth={2.2} />
+          <LogOut size={18} color={colors.white} strokeWidth={2.2} />
           <Text style={styles.logoutText}>Log out</Text>
         </Pressable>
       </ScrollView>
@@ -73,7 +73,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.xl * 3},
   profileCard: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  avatar: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.pill, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
+  avatar: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
   profileDetails: {flex: 1, minWidth: 0, marginLeft: spacing.md},
   name: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   email: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
@@ -85,8 +85,8 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   themeText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
   themeSelectedText: {color: colors.white},
   optionPressed: {opacity: 0.8},
-  logout: {minHeight: controlHeight.md, marginTop: spacing.xl, paddingHorizontal: spacing.md, borderRadius: radius.md, borderWidth: 1, borderColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
-  logoutText: {color: colors.expense, fontSize: 14, fontWeight: '800'},
+  logout: {minHeight: controlHeight.md, marginTop: spacing.xl, paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
+  logoutText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   pressed: {opacity: 0.75},
   modalBackdrop: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg, backgroundColor: colors.modalBackdrop},
   logoutDialog: {width: '100%', maxWidth: 360, backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.xl},
