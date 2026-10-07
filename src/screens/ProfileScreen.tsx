@@ -30,34 +30,37 @@ export default function ProfileScreen() {
       <AppHeader title="Profile" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
-          <View style={styles.avatar}><UserRound size={24} color={colors.primary} strokeWidth={2.2} /></View>
-          <View style={styles.profileDetails}>
-            <Text style={styles.name} numberOfLines={1}>{displayName}</Text>
-            <Text style={styles.email} numberOfLines={1}>{user?.email ?? 'No email available'}</Text>
+          <View style={[styles.profileRow, styles.rowDivider]}>
+            <View style={styles.avatar}><UserRound size={20} color={colors.primary} strokeWidth={2.2} /></View>
+            <View style={styles.profileDetails}>
+              <Text style={styles.name} numberOfLines={1}>{displayName}</Text>
+              <Text style={styles.email} numberOfLines={1}>{user?.email ?? 'No email available'}</Text>
+            </View>
+          </View>
+
+          <View style={[styles.themeRow, styles.rowDivider]}>
+            <Text style={styles.rowLabel}>Theme</Text>
+            <View style={styles.themeOptions}>
+              {(['system', 'light', 'dark'] as ThemeMode[]).map(item => (
+                <Pressable key={item} accessibilityRole="button" accessibilityLabel={`Use ${item} theme`} accessibilityState={{selected: mode === item}} onPress={() => chooseMode(item)} style={({pressed}) => [styles.themeOption, mode === item && styles.themeSelected, pressed && styles.optionPressed]}>
+                  {item === 'system' ? <Monitor size={14} color={mode === item ? colors.white : colors.inkMuted} /> : item === 'light' ? <Sun size={14} color={mode === item ? colors.white : colors.inkMuted} /> : <Moon size={14} color={mode === item ? colors.white : colors.inkMuted} />}
+                </Pressable>
+              ))}
+            </View>
+          </View>
+
+          <View style={[styles.versionRow, styles.rowDivider]}>
+            <Text style={styles.versionLabel}>App version</Text>
+            <Text style={styles.versionValue}>{appVersion}</Text>
+          </View>
+
+          <View style={styles.logoutRow}>
+            <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={confirmLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]}>
+              <LogOut size={18} color={colors.white} strokeWidth={2.2} />
+              <Text style={styles.logoutText}>Log out</Text>
+            </Pressable>
           </View>
         </View>
-
-        <Text style={styles.sectionTitle}>Theme</Text>
-        <View style={styles.themeCard}>
-          <View style={styles.themeOptions}>
-            {(['system', 'light', 'dark'] as ThemeMode[]).map(item => (
-              <Pressable key={item} accessibilityRole="button" accessibilityState={{selected: mode === item}} onPress={() => chooseMode(item)} style={({pressed}) => [styles.themeOption, mode === item && styles.themeSelected, pressed && styles.optionPressed]}>
-                <Text style={[styles.themeText, mode === item && styles.themeSelectedText]}>{item === 'system' ? 'System' : item === 'light' ? 'Light' : 'Dark'}</Text>
-                {item === 'system' ? <Monitor size={16} color={mode === item ? colors.white : colors.inkMuted} /> : item === 'light' ? <Sun size={16} color={mode === item ? colors.white : colors.inkMuted} /> : <Moon size={16} color={mode === item ? colors.white : colors.inkMuted} />}
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        <View style={styles.versionRow}>
-          <Text style={styles.versionLabel}>App version</Text>
-          <Text style={styles.versionValue}>{appVersion}</Text>
-        </View>
-
-        <Pressable accessibilityRole="button" accessibilityLabel="Log out" onPress={confirmLogout} style={({pressed}) => [styles.logout, pressed && styles.pressed]}>
-          <LogOut size={18} color={colors.white} strokeWidth={2.2} />
-          <Text style={styles.logoutText}>Log out</Text>
-        </Pressable>
       </ScrollView>
       <Modal transparent visible={showLogoutDialog} animationType="fade" onRequestClose={() => setShowLogoutDialog(false)}>
         <View style={styles.modalBackdrop}>
@@ -82,23 +85,24 @@ export default function ProfileScreen() {
 const createStyles = (colors: Colors) => StyleSheet.create({
   flex: {flex: 1, backgroundColor: colors.canvas},
   content: {paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.xl * 3},
-  profileCard: {flexDirection: 'row', alignItems: 'center', backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
-  avatar: {height: controlHeight.md, width: controlHeight.md, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
+  profileCard: {backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
+  profileRow: {flexDirection: 'row', alignItems: 'center', padding: spacing.lg},
+  rowDivider: {borderBottomWidth: StyleSheet.hairlineWidth, borderBottomColor: colors.line},
+  avatar: {height: controlHeight.sm, width: controlHeight.sm, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
   profileDetails: {flex: 1, minWidth: 0, marginLeft: spacing.md},
   name: {color: colors.ink, fontSize: 16, fontWeight: '800'},
-  email: {color: colors.inkMuted, fontSize: 12, marginTop: spacing.xs},
-  sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800', marginTop: spacing.xl, marginBottom: spacing.sm},
-  themeCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.sm},
-  themeOptions: {flexDirection: 'row', gap: 2, padding: 3, borderRadius: radius.md, backgroundColor: colors.surfaceMuted},
-  themeOption: {flex: 1, minHeight: controlHeight.sm, paddingHorizontal: spacing.xs, borderRadius: radius.sm, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
+  email: {color: colors.inkMuted, fontSize: 13, marginTop: spacing.xs},
+  themeRow: {padding: spacing.md, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  rowLabel: {color: colors.ink, fontSize: 14, fontWeight: '700'},
+  themeOptions: {width: 108, flexDirection: 'row', gap: 2, padding: 2, borderRadius: radius.md, backgroundColor: colors.surfaceMuted},
+  themeOption: {flex: 1, height: 28, borderRadius: radius.sm, alignItems: 'center', justifyContent: 'center'},
   themeSelected: {backgroundColor: colors.primary},
-  themeText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
-  themeSelectedText: {color: colors.white},
   optionPressed: {opacity: 0.8},
-  versionRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: spacing.lg, padding: spacing.md, backgroundColor: colors.surface, borderRadius: radius.md},
-  versionLabel: {color: colors.inkMuted, fontSize: 13},
+  versionRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', padding: spacing.md},
+  versionLabel: {color: colors.ink, fontSize: 14, fontWeight: '700'},
   versionValue: {color: colors.ink, fontSize: 13, fontWeight: '700'},
-  logout: {minHeight: controlHeight.md, marginTop: spacing.xl, paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
+  logoutRow: {padding: spacing.md},
+  logout: {minHeight: controlHeight.md, paddingHorizontal: spacing.md, borderRadius: radius.md, backgroundColor: colors.expense, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: spacing.xs},
   logoutText: {color: colors.white, fontSize: 14, fontWeight: '800'},
   pressed: {opacity: 0.75},
   modalBackdrop: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg, backgroundColor: colors.modalBackdrop},
