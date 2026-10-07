@@ -102,7 +102,6 @@ export default function TransactionsScreen({navigation}: Props) {
             renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === transactions.length - 1} onPress={() => { refreshOnFocus.current = true; navigation.navigate('AddEntry', {transaction: item}); }} onLongPress={() => confirmDelete(item.id)} />}
             style={styles.transactionsList}
             contentContainerStyle={styles.listContent}
-            ListFooterComponent={<View style={styles.footer} />}
           />}
         </View>
       </>}
@@ -153,6 +152,5 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   emptyCopy: {color: colors.inkMuted, fontSize: 13, lineHeight: 20, maxWidth: 260, textAlign: 'center', marginTop: spacing.xs},
   emptyAction: {height: controlHeight.xs, flexDirection: 'row', alignItems: 'center', gap: spacing.xs, paddingHorizontal: spacing.md, borderRadius: radius.pill, backgroundColor: colors.primary, marginTop: spacing.lg},
   emptyActionText: {color: colors.white, fontSize: 12, fontWeight: '800'},
-  footer: {height: spacing.xl * 3},
   actionPressed: {backgroundColor: colors.primaryDark, transform: [{scale: 0.96}]},
 });

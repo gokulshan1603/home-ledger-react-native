@@ -22,13 +22,14 @@ const TransactionsStack = createNativeStackNavigator<TransactionsStackParamList>
 const GoldStack = createNativeStackNavigator<GoldStackParamList>();
 const FDStack = createNativeStackNavigator<FDStackParamList>();
 const LoansStack = createNativeStackNavigator<LoansStackParamList>();
-type TabIconProps = {color: string; focused: boolean};
+type TabIconProps = {focused: boolean};
+const useTabTint = (focused: boolean) => { const {colors} = useTheme(); return focused ? colors.primary : colors.inkMuted; };
 const TabIcon = ({focused, children}: {focused: boolean; children: React.ReactNode}) => { const {colors} = useTheme(); return <View style={[styles.tabIcon, focused && {backgroundColor: colors.primarySoft}]}>{children}</View>; };
-const TransactionsTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><ArrowDownUp color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
-const GoldTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><Gem color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
-const FDTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><BadgeIndianRupee color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
-const LoansTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><HandCoins color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
-const ProfileTabIcon = ({color, focused}: TabIconProps) => <TabIcon focused={focused}><UserRound color={color} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
+const TransactionsTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><ArrowDownUp color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
+const GoldTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><Gem color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
+const FDTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><BadgeIndianRupee color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
+const LoansTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><HandCoins color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
+const ProfileTabIcon = ({focused}: TabIconProps) => <TabIcon focused={focused}><UserRound color={useTabTint(focused)} size={21} strokeWidth={focused ? 2.4 : 2.1} /></TabIcon>;
 
 const stackOptions = (colors: ReturnType<typeof useTheme>['colors']) => ({headerShadowVisible: false, headerStyle: {backgroundColor: colors.canvas}, headerTintColor: colors.ink, headerTitleStyle: styles.headerTitle, contentStyle: {backgroundColor: colors.canvas}, header: ({navigation, route}: NativeStackHeaderProps) => { const titles: Record<string, string> = {AddEntry: 'Add entry', AddGold: 'Gold holding', AddFD: 'Fixed deposit', AddLoan: 'Loan'}; return <AppHeader title={titles[route.name] ?? route.name} onBack={() => navigation.goBack()} />; }});
 
@@ -54,5 +55,5 @@ const styles = StyleSheet.create({
   tabItem: {paddingVertical: 1},
   tabIconSlot: {height: 26, marginBottom: 1},
   tabIcon: {height: 26, width: 44, alignItems: 'center', justifyContent: 'center', borderRadius: 13},
-  tabLabel: {fontSize: 11, fontWeight: '700', lineHeight: 14, marginTop: 1, includeFontPadding: false},
+  tabLabel: {fontSize: 11, lineHeight: 14, marginTop: 1, includeFontPadding: false},
 });
