@@ -9,6 +9,7 @@ import {useMonthSummary} from '../hooks/useMonthSummary';
 import {accountBalance} from '../utils/summary';
 import {formatCurrency} from '../utils/format';
 import {deleteTransaction as removeTransaction} from '../services/transactionService';
+import {TransactionType} from '../types/transaction';
 import SummaryCard from '../components/SummaryCard';
 import MonthSwitcher from '../components/MonthSwitcher';
 import TransactionItem from '../components/TransactionItem';
@@ -18,11 +19,13 @@ import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 
 type Props = TransactionsScreenProps;
+type TransactionFilter = 'all' | TransactionType;
 
 export default function TransactionsScreen({navigation}: Props) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
   const [month, setMonth] = useState(new Date());
+  const [transactionFilter, setTransactionFilter] = useState<TransactionFilter>('all');
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
   const {transactions, allTransactions, loading, error, refresh, reload} = useTransactions(month);
   const refreshOnFocus = useRef(false);
@@ -43,6 +46,9 @@ export default function TransactionsScreen({navigation}: Props) {
     });
     return result;
   }, [allTransactions]);
+  const filteredTransactions = useMemo(() => transactionFilter === 'all'
+    ? transactions
+    : transactions.filter(transaction => transaction.type === transactionFilter), [transactionFilter, transactions]);
   const now = new Date();
   const isLatestMonth = month.getFullYear() === now.getFullYear() && month.getMonth() === now.getMonth();
   const refreshControl = <RefreshControl refreshing={loading} onRefresh={refresh} tintColor={colors.primary} colors={[colors.primary]} progressBackgroundColor={colors.surface} titleColor={colors.inkMuted} />;
@@ -84,21 +90,32 @@ export default function TransactionsScreen({navigation}: Props) {
           </View>
         </ScrollView>
         <View style={styles.transactionsSection}>
-          <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.countBadge}>{transactions.length} {transactions.length === 1 ? 'entry' : 'entries'}</Text></View>
+          <View style={styles.transactionsHeader}><Text style={styles.sectionTitle}>Transactions</Text><Text style={styles.countBadge}>{filteredTransactions.length} {filteredTransactions.length === 1 ? 'entry' : 'entries'}</Text></View>
+          <View style={styles.filterControl} accessibilityRole="tablist">
+            {(['all', 'income', 'expense'] as TransactionFilter[]).map(filter => <Pressable
+              key={filter}
+              accessibilityRole="tab"
+              accessibilityState={{selected: transactionFilter === filter}}
+              onPress={() => setTransactionFilter(filter)}
+              style={({pressed}) => [styles.filterOption, transactionFilter === filter && styles.filterOptionSelected, pressed && styles.filterPressed]}
+            >
+              <Text style={[styles.filterText, transactionFilter === filter && styles.filterTextSelected]}>{filter === 'all' ? 'All' : filter === 'income' ? 'Income' : 'Expense'}</Text>
+            </Pressable>)}
+          </View>
         </View>
         <View style={styles.transactionsCard}>
-          {transactions.length === 0 ? <View style={styles.emptyList}>
+          {filteredTransactions.length === 0 ? <View style={styles.emptyList}>
             <View style={styles.emptyIcon}><ReceiptText size={24} color={colors.primary} strokeWidth={2.2} /></View>
-            <Text style={styles.emptyTitle}>Nothing logged yet</Text>
-            <Text style={styles.emptyCopy}>Add your first income or expense for this month.</Text>
-            <Pressable accessibilityRole="button" onPress={openAddEntry} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
+            <Text style={styles.emptyTitle}>{transactions.length === 0 ? 'Nothing logged yet' : `No ${transactionFilter} entries`}</Text>
+            <Text style={styles.emptyCopy}>{transactions.length === 0 ? 'Add your first income or expense for this month.' : 'Try another filter or add a new entry.'}</Text>
+            {transactions.length === 0 ? <Pressable accessibilityRole="button" onPress={openAddEntry} style={({pressed}) => [styles.emptyAction, pressed && styles.actionPressed]}>
               <Plus size={15} color={colors.white} strokeWidth={2.4} />
               <Text style={styles.emptyActionText}>Add entry</Text>
-            </Pressable>
+            </Pressable> : null}
           </View> : <FlatList
-            data={transactions}
+            data={filteredTransactions}
             keyExtractor={item => item.id}
-            renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === transactions.length - 1} onPress={() => { refreshOnFocus.current = true; navigation.navigate('AddEntry', {transaction: item}); }} onLongPress={() => confirmDelete(item.id)} />}
+            renderItem={({item, index}) => <TransactionItem transaction={item} balance={transactionBalances.get(item.id) ?? 0} isLast={index === filteredTransactions.length - 1} onPress={() => { refreshOnFocus.current = true; navigation.navigate('AddEntry', {transaction: item}); }} onLongPress={() => confirmDelete(item.id)} />}
             style={styles.transactionsList}
             contentContainerStyle={styles.listContent}
           />}
@@ -142,6 +159,12 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   totalAmount: {color: colors.ink, fontSize: 18, fontWeight: '800'},
   transactionsSection: {marginTop: spacing.lg, marginHorizontal: spacing.lg},
   transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
+  filterControl: {flexDirection: 'row', marginTop: spacing.sm, padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.pill},
+  filterOption: {flex: 1, minHeight: controlHeight.xs, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill},
+  filterOptionSelected: {backgroundColor: colors.primary},
+  filterPressed: {opacity: 0.78},
+  filterText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
+  filterTextSelected: {color: colors.white},
   transactionsCard: {flex: 1, marginHorizontal: spacing.lg, marginVertical: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
   transactionsList: {flex: 1},
   emptyList: {flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing.lg},
