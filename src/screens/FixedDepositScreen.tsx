@@ -64,8 +64,8 @@ export default function FixedDepositScreen({navigation}: Props) {
 
   return <View style={styles.safeArea}>
     <AppHeader title="Fixed deposits" rightAction={{accessibilityLabel: 'Add fixed deposit', onPress: openAddDeposit, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
-    {loading ? <View style={styles.stateArea}>
-      <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
+    {loading ? <View style={styles.loadingArea}>
+      <View style={styles.loader}><ActivityIndicator animating size="large" /></View>
       <Text style={[styles.emptyTitle, styles.loadingText]}>Loading fixed deposits…</Text>
     </View> : error ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
       <View style={styles.stateArea}>
@@ -166,6 +166,7 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   amountLabel: {color: colors.inkMuted, fontSize: 12,  marginTop: spacing.xs},
   stateScroll: {flex: 1},
   stateScrollContent: {flexGrow: 1},
+  loadingArea: {flex: 1, alignItems: 'center', justifyContent: 'center'},
   stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: 0, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
   loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
   emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},

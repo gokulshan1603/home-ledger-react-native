@@ -16,8 +16,8 @@ export default function RootNavigator() {
 
   if (loading) {
     return (
-      <View style={[styles.loading, {backgroundColor: colors.canvas}]}>
-        <ActivityIndicator color={colors.primary} size="large" />
+      <View style={styles.loading}>
+        <ActivityIndicator size="large" />
       </View>
     );
   }
