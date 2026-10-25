@@ -10,7 +10,6 @@ import {accountBalance} from '../utils/summary';
 import {formatCurrency} from '../utils/format';
 import {deleteTransaction as removeTransaction} from '../services/transactionService';
 import {TransactionType} from '../types/transaction';
-import SummaryCard from '../components/SummaryCard';
 import MonthSwitcher from '../components/MonthSwitcher';
 import TransactionItem from '../components/TransactionItem';
 import AppHeader from '../components/AppHeader';
@@ -79,7 +78,6 @@ export default function TransactionsScreen({navigation}: Props) {
       </View> : <>
         <ScrollView style={styles.overviewScroll} contentContainerStyle={styles.overview} alwaysBounceVertical refreshControl={refreshControl}>
           <MonthSwitcher month={month} onPrevious={() => setMonth(current => addMonths(current, -1))} onNext={() => setMonth(current => addMonths(current, 1))} nextDisabled={isLatestMonth} />
-          <View style={styles.summarySpacing}><SummaryCard {...summary} /></View>
           <View style={styles.balanceSection}>
             <Text style={styles.sectionTitle}>Balances</Text>
             <View style={styles.balanceRow}>
@@ -100,6 +98,7 @@ export default function TransactionsScreen({navigation}: Props) {
               style={({pressed}) => [styles.filterOption, transactionFilter === filter && styles.filterOptionSelected, pressed && styles.filterPressed]}
             >
               <Text style={[styles.filterText, transactionFilter === filter && styles.filterTextSelected]}>{filter === 'all' ? 'All' : filter === 'income' ? 'Income' : 'Expense'}</Text>
+              {filter !== 'all' ? <Text style={[styles.filterAmount, transactionFilter === filter && styles.filterTextSelected]}>{formatCurrency(filter === 'income' ? summary.income : summary.expense)}</Text> : null}
             </Pressable>)}
           </View>
         </View>
@@ -143,7 +142,6 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   stateArea: {flex: 1, alignItems: 'center', justifyContent: 'center', marginHorizontal: spacing.lg, marginTop: 0, marginBottom: spacing.lg, paddingHorizontal: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg},
   loader: {height: 52, width: 52, alignItems: 'center', justifyContent: 'center'},
   emptyIcon: {height: controlHeight.md, width: controlHeight.md, marginBottom: spacing.md, borderRadius: radius.md, backgroundColor: colors.primarySoft, alignItems: 'center', justifyContent: 'center'},
-  summarySpacing: {marginTop: spacing.md},
   balanceSection: {marginTop: spacing.lg},
   sectionTitle: {color: colors.ink, fontSize: 16, fontWeight: '800'},
   balanceRow: {flexDirection: 'row', gap: spacing.sm, marginTop: spacing.sm},
@@ -160,10 +158,11 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   transactionsSection: {marginTop: spacing.lg, marginHorizontal: spacing.lg},
   transactionsHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'},
   filterControl: {flexDirection: 'row', marginTop: spacing.sm, padding: spacing.xs, backgroundColor: colors.surface, borderRadius: radius.pill},
-  filterOption: {flex: 1, minHeight: controlHeight.xs, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill},
+  filterOption: {flex: 1, minHeight: controlHeight.md, alignItems: 'center', justifyContent: 'center', borderRadius: radius.pill},
   filterOptionSelected: {backgroundColor: colors.primary},
   filterPressed: {opacity: 0.78},
   filterText: {color: colors.inkMuted, fontSize: 12, fontWeight: '700'},
+  filterAmount: {color: colors.ink, fontSize: 11, fontWeight: '800', marginTop: spacing.xs},
   filterTextSelected: {color: colors.white},
   transactionsCard: {flex: 1, marginHorizontal: spacing.lg, marginVertical: spacing.lg, backgroundColor: colors.surface, borderRadius: radius.lg, overflow: 'hidden'},
   transactionsList: {flex: 1},
