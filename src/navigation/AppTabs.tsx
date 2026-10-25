@@ -42,7 +42,7 @@ function LoansNavigator() { const {colors} = useTheme(); return <LoansStack.Navi
 
 export default function AppTabs() {
   const {colors} = useTheme();
-  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64, paddingBottom: 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabel: renderTabLabel}}>
+  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.canvas, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64, paddingBottom: 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabel: renderTabLabel}}>
     <Tabs.Screen name="Transactions" component={TransactionsNavigator} options={{tabBarIcon: TransactionsTabIcon}} />
     <Tabs.Screen name="Gold" component={GoldNavigator} options={{tabBarIcon: GoldTabIcon}} />
     <Tabs.Screen name="FD" component={FDNavigator} options={{tabBarIcon: FDTabIcon}} />

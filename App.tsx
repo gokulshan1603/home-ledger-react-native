@@ -24,7 +24,7 @@ function AppContent() {
 
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.root} edges={['top', 'bottom']}>
+      <SafeAreaView style={[styles.root, {backgroundColor: colors.canvas}]} edges={['top', 'bottom']}>
         <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} backgroundColor={colors.canvas} />
         <AuthProvider>
           <RootNavigator />
