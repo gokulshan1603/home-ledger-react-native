@@ -14,6 +14,7 @@ import ConfirmDialog from '../components/ConfirmDialog';
 import MessageDialog from '../components/MessageDialog';
 
 type Props = NativeStackScreenProps<GoldStackParamList, 'Gold'>;
+const SOVEREIGN_WEIGHT_GRAMS = 8;
 
 export default function GoldScreen({navigation}: Props) {
   const {colors} = useTheme();
@@ -24,6 +25,7 @@ export default function GoldScreen({navigation}: Props) {
   const refreshOnFocus = useRef(false);
   const activeItems = useMemo(() => items.filter(item => item.status === 'active'), [items]);
   const totalWeight = useMemo(() => activeItems.reduce((sum, item) => sum + (item.weight ?? 0), 0), [activeItems]);
+  const totalSovereigns = totalWeight / SOVEREIGN_WEIGHT_GRAMS;
 
   useFocusEffect(useCallback(() => {
     if (refreshOnFocus.current) {
@@ -81,9 +83,15 @@ export default function GoldScreen({navigation}: Props) {
     </ScrollView> : <ScrollView style={styles.contentScroll} contentContainerStyle={styles.content} alwaysBounceVertical refreshControl={refreshControl}>
       <View style={styles.summaryCard}>
         <View style={styles.summaryTop}>
-          <View style={styles.summaryCopy}>
-            <Text style={styles.summaryLabel}>Total active weight</Text>
-            <Text style={styles.summaryValue}>{totalWeight ? `${totalWeight}g` : '—'}</Text>
+          <View style={styles.summaryStats}>
+            <View style={styles.summaryCopy}>
+              <Text style={styles.summaryLabel}>Active weight</Text>
+              <Text style={styles.summaryValue}>{totalWeight ? `${totalWeight}g` : '—'}</Text>
+            </View>
+            <View style={[styles.summaryCopy, styles.sovereignStat]}>
+              <Text style={styles.summaryLabel}>Sovereigns</Text>
+              <Text style={styles.summaryValue}>{totalSovereigns ? totalSovereigns.toFixed(2) : '—'}</Text>
+            </View>
           </View>
           <View style={styles.summaryIcon}><Gem size={25} color={colors.primary} strokeWidth={2.1} /></View>
         </View>
@@ -118,7 +126,9 @@ const createStyles = (colors: Colors) => StyleSheet.create({
   content: {paddingHorizontal: spacing.lg, paddingBottom: spacing.xl * 2},
   summaryCard: {backgroundColor: colors.surface, borderRadius: radius.lg, padding: spacing.lg},
   summaryTop: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
+  summaryStats: {flex: 1, flexDirection: 'row'},
   summaryCopy: {flex: 1, minWidth: 0},
+  sovereignStat: {borderLeftWidth: StyleSheet.hairlineWidth, borderLeftColor: colors.line, paddingLeft: spacing.md, marginLeft: spacing.md},
   summaryLabel: {color: colors.inkMuted, fontSize: 13, fontWeight: '700'},
   summaryValue: {color: colors.ink, fontSize: 24, fontWeight: '800', marginTop: spacing.xs},
   summaryMeta: {color: colors.inkMuted, fontSize: 12, fontWeight: '600', marginTop: spacing.md},
