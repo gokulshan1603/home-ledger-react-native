@@ -2,7 +2,6 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, FlatList, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Landmark, Plus, ReceiptText, Wallet} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {addMonths} from 'date-fns';
 import {TransactionsScreenProps} from '../navigation/types';
 import {useTransactions} from '../hooks/useTransactions';
@@ -63,7 +62,7 @@ export default function TransactionsScreen({navigation}: Props) {
   };
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <View style={styles.safeArea}>
       <AppHeader title="Transactions" rightAction={{accessibilityLabel: 'Add entry', onPress: openAddEntry, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
       {loading ? <View style={styles.stateArea}>
         <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
@@ -106,7 +105,7 @@ export default function TransactionsScreen({navigation}: Props) {
         </View>
       </>}
       <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this entry?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingTransaction} />
-    </SafeAreaView>
+    </View>
   );
 }
 

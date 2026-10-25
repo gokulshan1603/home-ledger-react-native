@@ -6,7 +6,6 @@ import {ThemeMode, useTheme} from '../context/ThemeContext';
 import {logout} from '../services/authService';
 import AppHeader from '../components/AppHeader';
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   const {user} = useAuth();
@@ -26,7 +25,7 @@ export default function ProfileScreen() {
     logout().catch(() => undefined);
   };
   return (
-    <SafeAreaView style={styles.flex} edges={['top']}>
+    <View style={styles.flex}>
       <AppHeader title="Profile" />
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.profileCard}>
@@ -78,7 +77,7 @@ export default function ProfileScreen() {
           </View>
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 }
 

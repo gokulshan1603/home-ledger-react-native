@@ -3,7 +3,6 @@ import {StyleSheet, Text, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {createNativeStackNavigator, NativeStackHeaderProps} from '@react-navigation/native-stack';
 import {ArrowDownUp, BadgeIndianRupee, Gem, HandCoins, UserRound} from 'lucide-react-native';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import TransactionsScreen from '../screens/TransactionsScreen';
 import AddEntryScreen from '../screens/AddEntryScreen';
 import GoldScreen from '../screens/GoldScreen';
@@ -43,8 +42,7 @@ function LoansNavigator() { const {colors} = useTheme(); return <LoansStack.Navi
 
 export default function AppTabs() {
   const {colors} = useTheme();
-  const insets = useSafeAreaInsets();
-  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64 + insets.bottom, paddingBottom: insets.bottom + 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabel: renderTabLabel}}>
+  return <Tabs.Navigator screenOptions={{headerShown: false, tabBarActiveTintColor: colors.primary, tabBarInactiveTintColor: colors.inkMuted, tabBarHideOnKeyboard: true, tabBarStyle: {backgroundColor: colors.surface, borderTopColor: colors.line, borderTopWidth: StyleSheet.hairlineWidth, elevation: 0, height: 64, paddingBottom: 5, paddingTop: 5, shadowColor: 'transparent', shadowOpacity: 0}, tabBarItemStyle: styles.tabItem, tabBarIconStyle: styles.tabIconSlot, tabBarLabel: renderTabLabel}}>
     <Tabs.Screen name="Transactions" component={TransactionsNavigator} options={{tabBarIcon: TransactionsTabIcon}} />
     <Tabs.Screen name="Gold" component={GoldNavigator} options={{tabBarIcon: GoldTabIcon}} />
     <Tabs.Screen name="FD" component={FDNavigator} options={{tabBarIcon: FDTabIcon}} />

@@ -3,7 +3,6 @@ import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Te
 import Svg, {Defs, LinearGradient, Rect, Stop} from 'react-native-svg';
 import {useFocusEffect} from '@react-navigation/native';
 import {BadgeIndianRupee, CalendarClock, CalendarDays, CalendarRange, Plus} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {FDStackParamList} from '../navigation/types';
 import {useFixedDeposits} from '../hooks/useFixedDeposits';
@@ -63,7 +62,7 @@ export default function FixedDepositScreen({navigation}: Props) {
     if (deposit) navigation.navigate('AddFD', {deposit});
   };
 
-  return <SafeAreaView style={styles.safeArea} edges={['top']}>
+  return <View style={styles.safeArea}>
     <AppHeader title="Fixed deposits" rightAction={{accessibilityLabel: 'Add fixed deposit', onPress: openAddDeposit, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
     {loading ? <View style={styles.stateArea}>
       <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
@@ -127,7 +126,7 @@ export default function FixedDepositScreen({navigation}: Props) {
     </ScrollView>}
     <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this fixed deposit?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingDeposit} />
     <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
-  </SafeAreaView>;
+  </View>;
 }
 
 function DepositStat({label, amount, icon: Icon}: {label: string; amount: number; icon: typeof CalendarClock}) {

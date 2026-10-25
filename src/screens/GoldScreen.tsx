@@ -2,7 +2,6 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {Gem, Plus} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {GoldStackParamList} from '../navigation/types';
 import {useGold} from '../hooks/useGold';
@@ -58,7 +57,7 @@ export default function GoldScreen({navigation}: Props) {
     if (holding) navigation.navigate('AddGold', {holding});
   };
 
-  return <SafeAreaView style={styles.safeArea} edges={['top']}>
+  return <View style={styles.safeArea}>
     <AppHeader title="Gold" rightAction={{accessibilityLabel: 'Add gold holding', onPress: openAddGold, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
     {loading ? <View style={styles.stateArea}>
       <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
@@ -110,7 +109,7 @@ export default function GoldScreen({navigation}: Props) {
     </ScrollView>}
     <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this gold holding?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingHolding} />
     <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
-  </SafeAreaView>;
+  </View>;
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({

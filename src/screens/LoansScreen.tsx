@@ -2,7 +2,6 @@ import React, {useCallback, useMemo, useRef, useState} from 'react';
 import {ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {ArrowDownLeft, ArrowUpRight, HandCoins, Plus} from 'lucide-react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {LoansStackParamList} from '../navigation/types';
 import {useLoans} from '../hooks/useLoans';
@@ -63,7 +62,7 @@ export default function LoansScreen({navigation}: Props) {
 
   const directionToggle = <View style={styles.toggle}>{(['given', 'taken'] as LoanDirection[]).map(item => <Pressable key={item} onPress={() => setDirection(item)} style={({pressed}) => [styles.toggleOption, direction === item && styles.selected, pressed && styles.togglePressed]}>{item === 'given' ? <ArrowUpRight size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} /> : <ArrowDownLeft size={17} color={direction === item ? colors.white : colors.inkMuted} strokeWidth={2.25} />}<Text style={[styles.toggleText, direction === item && styles.selectedText]}>{item === 'given' ? 'Loans given' : 'Loans taken'}</Text></Pressable>)}</View>;
 
-  return <SafeAreaView style={styles.safeArea} edges={['top']}>
+  return <View style={styles.safeArea}>
     <AppHeader title="Loans" rightAction={{accessibilityLabel: 'Add loan', onPress: openAddLoan, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
     {loading ? <View style={styles.stateArea}>
       <View style={styles.loader}><ActivityIndicator animating size="large" color={colors.primary} /></View>
@@ -118,7 +117,7 @@ export default function LoansScreen({navigation}: Props) {
     </ScrollView>}
     <ConfirmDialog visible={pendingDeleteId !== null} title="Delete this loan?" message="This cannot be undone." confirmLabel="Delete" onCancel={() => setPendingDeleteId(null)} onConfirm={deletePendingLoan} />
     <MessageDialog visible={messageDialog !== null} title={messageDialog?.title ?? ''} message={messageDialog?.message ?? ''} onClose={() => setMessageDialog(null)} />
-  </SafeAreaView>;
+  </View>;
 }
 
 const createStyles = (colors: Colors) => StyleSheet.create({

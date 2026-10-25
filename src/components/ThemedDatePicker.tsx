@@ -5,6 +5,7 @@ import {CalendarDays, ChevronDown, ChevronLeft, ChevronRight} from 'lucide-react
 import {Colors, controlHeight, radius, spacing} from '../constants/theme';
 import {useTheme} from '../context/ThemeContext';
 import {formatDate} from '../utils/format';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
 const WEEK_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const MONTHS = Array.from({length: 12}, (_, month) => new Date(2024, month, 1));
@@ -12,6 +13,7 @@ const MONTHS = Array.from({length: 12}, (_, month) => new Date(2024, month, 1));
 export default function ThemedDatePicker({value, onChange}: {value: Date; onChange: (value: Date) => void}) {
   const {colors} = useTheme();
   const styles = createStyles(colors);
+  const {bottom} = useSafeAreaInsets();
   const [visible, setVisible] = useState(false);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
   const [calendarMonth, setCalendarMonth] = useState(startOfMonth(value));
@@ -38,7 +40,7 @@ export default function ThemedDatePicker({value, onChange}: {value: Date; onChan
     </Pressable>
     <Modal transparent visible={visible} animationType="slide" onRequestClose={() => setVisible(false)}>
       <View style={styles.backdrop}>
-        <View style={styles.modal}>
+        <View style={[styles.modal, {paddingBottom: spacing.xl + bottom}]}>
           <View style={styles.modalHeader}>
             <View>
               <Text style={styles.modalTitle}>Choose date</Text>
