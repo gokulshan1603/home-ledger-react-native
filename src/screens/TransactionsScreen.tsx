@@ -70,7 +70,7 @@ export default function TransactionsScreen({navigation}: Props) {
     <View style={styles.safeArea}>
       <AppHeader title="Transactions" rightAction={{accessibilityLabel: 'Add entry', onPress: openAddEntry, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
       {loading ? <View style={styles.loadingArea}>
-        <View style={styles.loader}><ActivityIndicator animating size="large" /></View>
+        <View style={styles.loader}><ActivityIndicator animating color={colors.primary} size="large" /></View>
         <Text style={[styles.emptyTitle, styles.loadingText]}>Loading transactions…</Text>
       </View> : error ? <View style={styles.stateArea}>
         <Text style={styles.emptyTitle}>Could not load transactions</Text>

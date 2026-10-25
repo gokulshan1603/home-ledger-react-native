@@ -65,7 +65,7 @@ export default function LoansScreen({navigation}: Props) {
   return <View style={styles.safeArea}>
     <AppHeader title="Loans" rightAction={{accessibilityLabel: 'Add loan', onPress: openAddLoan, icon: <Plus size={20} color={colors.white} strokeWidth={2.4} />}} />
     {loading ? <View style={styles.loadingArea}>
-      <View style={styles.loader}><ActivityIndicator animating size="large" /></View>
+      <View style={styles.loader}><ActivityIndicator animating color={colors.primary} size="large" /></View>
       <Text style={[styles.emptyTitle, styles.loadingText]}>Loading loans…</Text>
     </View> : error ? <ScrollView style={styles.stateScroll} contentContainerStyle={styles.stateScrollContent} alwaysBounceVertical refreshControl={refreshControl}>
       <View style={styles.stateToggle}>{directionToggle}</View>
