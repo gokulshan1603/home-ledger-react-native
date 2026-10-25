@@ -21,6 +21,7 @@ export type Colors = {
   summaryDivider: string;
   summaryLabel: string;
   white: string;
+  onPrimaryMuted: string;
   black: string;
   modalBackdrop: string;
 };
@@ -48,6 +49,7 @@ export const lightColors: Colors = {
   summaryDivider: '#E1E1E7',
   summaryLabel: '#60606A',
   white: '#FFFFFF',
+  onPrimaryMuted: 'rgba(255,255,255,0.82)',
   black: '#000000',
   modalBackdrop: 'rgba(0,0,0,0.35)',
 };
@@ -75,6 +77,7 @@ export const darkColors: Colors = {
   summaryDivider: 'rgba(84,84,88,0.32)',
   summaryLabel: 'rgba(235,235,245,0.75)',
   white: '#FFFFFF',
+  onPrimaryMuted: 'rgba(255,255,255,0.82)',
   black: '#000000',
   modalBackdrop: 'rgba(0,0,0,0.62)',
 };
@@ -99,4 +102,26 @@ export const controlHeight = {
   sm: 40,
   md: 48,
   lg: 52,
+};
+
+export const typeScale = {
+  caption: 12,
+  label: 13,
+  body: 14,
+  bodyStrong: 16,
+  large: 18,
+  title: 20,
+  display: 24,
+};
+
+export const fontWeights = {
+  regular: '400' as const,
+  medium: '600' as const,
+  semibold: '700' as const,
+  bold: '800' as const,
+};
+
+export const lineHeights = {
+  caption: 17,
+  body: 20,
 };
